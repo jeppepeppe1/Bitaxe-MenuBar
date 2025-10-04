@@ -9,7 +9,7 @@ class BitaxeMenubar < Formula
   depends_on "terminal-notifier"
 
   def install
-    system "swift", "build", "--configuration", "release"
+    system "swift", "build", "--configuration", "release", "--disable-sandbox"
     bin.install ".build/release/bitaxe-menubar"
     
     # Install resources
