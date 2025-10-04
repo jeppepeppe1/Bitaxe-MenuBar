@@ -100,7 +100,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         let nsRange = NSRange(tRange, in: statusText)
                         if asicTemp >= 65 {
                             attributedString.addAttribute(.foregroundColor, value: NSColor.systemRed, range: nsRange)
-                            print("🔥 High ASIC Temperature: \(Int(asicTemp))°C")
                             self.showSystemNotification(title: "🔥 High ASIC Temperature", message: "\(Int(asicTemp))°C")
                         }
                     }
@@ -109,7 +108,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         let nsRange = NSRange(vrRange, in: statusText)
                         if vrTemp >= 86 {
                             attributedString.addAttribute(.foregroundColor, value: NSColor.systemRed, range: nsRange)
-                            print("🔥 High VR Temperature: \(Int(vrTemp))°C")
                             self.showSystemNotification(title: "🔥 High VR Temperature", message: "\(Int(vrTemp))°C")
                         }
                     }
@@ -153,7 +151,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         guard let notifierPath = terminalNotifierPath else {
-            print("Warning: terminal-notifier not found. Install with: brew install terminal-notifier")
             return
         }
         
