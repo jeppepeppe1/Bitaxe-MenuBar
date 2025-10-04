@@ -5,19 +5,27 @@ import AppKit
 class AppConfig {
     private let userDefaults = UserDefaults.standard
     private let bitaxeIPKey = "BitAxeIP"
-    private let defaultIP = "192.168.0.13"
     
-    var bitaxeIP: String {
+    var bitaxeIP: String? {
         get {
-            return userDefaults.string(forKey: bitaxeIPKey) ?? defaultIP
+            return userDefaults.string(forKey: bitaxeIPKey)
         }
         set {
-            userDefaults.set(newValue, forKey: bitaxeIPKey)
+            if let newValue = newValue {
+                userDefaults.set(newValue, forKey: bitaxeIPKey)
+            } else {
+                userDefaults.removeObject(forKey: bitaxeIPKey)
+            }
         }
     }
     
-    var apiURL: String {
-        return "http://\(bitaxeIP)/api/system/info"
+    var apiURL: String? {
+        guard let ip = bitaxeIP else { return nil }
+        return "http://\(ip)/api/system/info"
+    }
+    
+    var isConfigured: Bool {
+        return bitaxeIP != nil
     }
 }
 
@@ -59,7 +67,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.addButton(withTitle: "Cancel")
         
         let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
-        input.stringValue = config.bitaxeIP
+        input.stringValue = config.bitaxeIP ?? ""
+        input.placeholderString = "e.g., 192.168.1.100"
         alert.accessoryView = input
         
         let response = alert.runModal()
@@ -68,40 +77,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if !newIP.isEmpty {
                 config.bitaxeIP = newIP
                 print("BitAxe IP updated to: \(newIP)")
+            } else {
+                config.bitaxeIP = nil
+                print("BitAxe IP cleared")
             }
         }
     }
     
     @objc func updateMinerData() {
-        // SIMULATION MODE - Comment out this block to use real API
-        DispatchQueue.main.async {
-            // Simulate different temperature scenarios
-            let scenarios = [
-                (hashrate: 1399.0, asicTemp: 62.0, vrTemp: 67.0), // Normal - all green
-                (hashrate: 1399.0, asicTemp: 67.0, vrTemp: 67.0), // T hot - T red
-                (hashrate: 1399.0, asicTemp: 62.0, vrTemp: 88.0), // VR hot - VR red
-                (hashrate: 1399.0, asicTemp: 70.0, vrTemp: 90.0), // Both hot - both red
-            ]
-            
-            let scenarioIndex = Int(Date().timeIntervalSince1970) % scenarios.count
-            let scenario = scenarios[scenarioIndex]
-            
-            let hashrate = scenario.hashrate
-            let asicTemp = scenario.asicTemp
-            let vrTemp = scenario.vrTemp
-            
-            // REAL API MODE - Uncomment this block to use real API
-            /*
-            guard let url = URL(string: self.config.apiURL) else { return }
-            
-            URLSession.shared.dataTask(with: url) { data, response, error in
-                DispatchQueue.main.async {
-                    if let data = data,
-                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                       let hashrate = json["hashRate"] as? Double,
-                       let asicTemp = json["temp"] as? Double,
-                       let vrTemp = json["vrTemp"] as? Double {
-            */
+        // Check if BitAxe IP is configured
+        guard config.isConfigured, let apiURL = config.apiURL else {
+            // Show configuration prompt
+            DispatchQueue.main.async {
+                let statusText = "⛏️ Configure IP..."
+                let attributedString = NSMutableAttributedString(string: statusText)
+                attributedString.addAttribute(.foregroundColor, value: NSColor.systemOrange, range: NSRange(location: 0, length: statusText.utf16.count))
+                self.statusItem.button?.attributedTitle = attributedString
+            }
+            return
+        }
+        
+        guard let url = URL(string: apiURL) else { return }
+        
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let hashrate = json["hashRate"] as? Double,
+                   let asicTemp = json["temp"] as? Double,
+                   let vrTemp = json["vrTemp"] as? Double {
                     
                     let hashrateTH = hashrate / 1000
                     
@@ -118,7 +122,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     attributedString.addAttribute(.foregroundColor, value: NSColor.systemGreen, range: NSRange(location: 0, length: statusText.utf16.count))
                     
                     // Find positions of T and VR temperatures
-                    
                     if let tRange = statusText.range(of: tText) {
                         let nsRange = NSRange(tRange, in: statusText)
                         if asicTemp >= 65 {
@@ -140,11 +143,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     // Set the attributed title
                     self.statusItem.button?.attributedTitle = attributedString
                     
-            // SIMULATION MODE - Comment out this block to use real API
-            }
-            
-            // REAL API MODE - Uncomment this block to use real API
-            /*
                 } else {
                     // Offline state - red color
                     let statusText = "⛏️ -- TH/s | T --°C | VR --°C"
@@ -155,7 +153,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
         }.resume()
-            */
     }
     
     func showSystemNotification(title: String, message: String) {

@@ -97,11 +97,12 @@ Edit `Sources/BitAxeMenuBar/main.swift` and change the default IP address:
 private let defaultIP = "YOUR_BITAXE_IP"  // Line 8
 ```
 
-### Enable Real API Mode
-The app runs in simulation mode by default. To connect to your actual BitAxe:
-1. Uncomment the "REAL API MODE" section in `main.swift`
-2. Comment out the "SIMULATION MODE" section
-3. Rebuild the app
+### First Time Setup
+The app requires configuration before use:
+1. Run the app - it will show "⛏️ Configure IP..." in the menu bar
+2. Click the menu bar icon and select "Configure BitAxe IP..."
+3. Enter your BitAxe's IP address
+4. The app will immediately start monitoring your miner
 
 ## Temperature Thresholds
 

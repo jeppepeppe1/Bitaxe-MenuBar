@@ -24,6 +24,8 @@ class BitaxeMenubar < Formula
       if [ -z "$1" ]; then
         echo "Usage: bitaxe-config <IP_ADDRESS>"
         echo "Example: bitaxe-config 192.168.1.100"
+        echo ""
+        echo "Current IP: $(defaults read com.bitaxe.menubar BitAxeIP 2>/dev/null || echo 'Not configured')"
         exit 1
       fi
       
@@ -50,9 +52,11 @@ class BitaxeMenubar < Formula
         2. Select your user > Login Items
         3. Click + and add bitaxe-menubar
       
-      The app will use simulation mode by default. To connect to your actual BitAxe:
-        1. Edit the source code to uncomment the real API section
-        2. Rebuild with: swift build --configuration release
+      The app requires configuration before use. Configure your BitAxe IP address:
+        1. Run the app
+        2. Click the menu bar icon
+        3. Select "Configure BitAxe IP..."
+        4. Enter your BitAxe's IP address
     EOS
   end
 
