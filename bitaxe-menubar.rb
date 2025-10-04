@@ -1,4 +1,4 @@
-class BitAxeMenuBar < Formula
+class BitaxeMenubar < Formula
   desc "BitAxe MenuBar - Simple Bitaxe miner status bar app"
   homepage "https://github.com/jeppepeppe1/BitAxe-MenuBar"
   url "https://github.com/jeppepeppe1/BitAxe-MenuBar/archive/refs/heads/main.zip"
