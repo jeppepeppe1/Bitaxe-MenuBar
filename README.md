@@ -36,6 +36,35 @@ swift build --configuration release
 ./.build/release/bitaxe-menubar
 ```
 
+## Development
+
+### Quick Commands
+
+```bash
+# Build the app
+make build
+
+# Test the app
+make test
+
+# Clean build artifacts
+make clean
+
+# Show project status
+make status
+
+# Interactive project manager
+make manage
+```
+
+### Project Management
+
+This project includes automated tools for managing both the main application and Homebrew distribution:
+
+- **`make manage`** - Interactive project manager with menu options
+- **`./manage-project.sh`** - Full-featured project management script
+- **`./setup-homebrew-tap.sh`** - Automated Homebrew tap setup
+
 ## Usage
 
 Just run `bitaxe-menubar` and you'll see your miner's status in the menu bar:
