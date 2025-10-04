@@ -27,6 +27,13 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 
 ### Via Homebrew (Recommended)
 
+
+```bash
+# Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+
 ```bash
 # Install terminal-notifier dependency first
 brew install terminal-notifier
