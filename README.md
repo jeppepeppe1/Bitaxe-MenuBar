@@ -10,17 +10,15 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 - **Live Monitoring**: Displays hashrate, ASIC temperature, and VR temperature
 - **High Precision**: Hashrate displayed with 3 decimal places (e.g., 1.399 TH/s)
 - **Color-coded Status**: Green for normal, red for critical temperatures
-- **Smart Notifications**: Alerts when temperatures exceed safe thresholds
+- **Smart Notifications**: Alerts when temperatures exceed safe thresholds (max once per 30 seconds)
 - **Fire Emojis**: Visual indicators for hot temperatures
 - **Auto-refresh**: Updates every 5 seconds
-- **Real-time Data**: Uses live API data from your BitAxe miner
+- **Real-time Data**: Uses live API data from your BitAxe miner (Devices have to be one same Network)
 
 ## Temperature Thresholds
 
 - **ASIC Temperature**: Red when ≥ 65°C
 - **VR Temperature**: Red when ≥ 86°C
-- **Notifications**: Sent when thresholds are exceeded (max once per 30 seconds)
-
 **Examples**
 - `⛏️ 1.40 TH/s | T 62°C | VR 67°C` - Normal operation (green)
 - `⛏️ 1.40 TH/s | 🔥 T 67°C | VR 67°C` - High ASIC temperature (red)
