@@ -18,7 +18,7 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 - **VR Temperature**: Red when ≥ 86°C
 - **Notifications**: Sent when thresholds are exceeded (max once per 30 seconds)
 
-**Examples
+**Examples**
 - `⛏️ 1.40 TH/s | T 62°C | VR 67°C` - Normal operation (green)
 - `⛏️ 1.40 TH/s | 🔥 T 67°C | VR 67°C` - High ASIC temperature (red)
 - `⛏️ 1.40 TH/s | T 62°C | 🔥 VR 88°C` - High VR temperature (red)
@@ -55,15 +55,6 @@ brew uninstall bitaxe-menubar
 # Remove the tap (optional)
 brew untap jeppepeppe1/bitaxe-menubar
 ```
-
-## Configuration
-
-### First Time Setup
-The app requires configuration before use:
-1. Run the app: `bitaxe-menubar &` (the & runs it in background)
-2. Use the CLI command to set your BitAxe IP address: `bitaxe-config YOUR_IP`
-3. The app will immediately start monitoring your miner
-4. You can now close the terminal - the app runs independently
 
 ## Troubleshooting
 
