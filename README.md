@@ -13,7 +13,7 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 - **Smart Notifications**: Alerts when temperatures exceed safe thresholds (max once per 30 seconds)
 - **Fire Emojis**: Visual indicators for hot temperatures
 - **Auto-refresh**: Updates every 5 seconds
-- **Real-time Data**: Uses live API data from your BitAxe miner (Mac and Bitaxe must be on the same network)
+- **Real-time Data**: Uses live API data from your BitAxe miner (https://osmu.wiki/bitaxe/api/)
 
 ## Temperature Thresholds
 
