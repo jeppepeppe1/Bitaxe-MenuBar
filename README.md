@@ -50,8 +50,8 @@ brew install bitaxe-menubar
 # Set your BitAxe IP address
 bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
 
-# Restart the app to apply changes
-bitaxe-menubar
+# Restart the app to apply changes 
+nohup bitaxe-menubar &
 ```
 
 ### Uninstalling
