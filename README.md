@@ -1,4 +1,4 @@
-# BitAxe MenuBar
+# Bitaxe MenuBar
 
 A simple macOS menu bar app that displays your Bitaxe miner's hashrate and temperature with real-time monitoring and notifications.
 
