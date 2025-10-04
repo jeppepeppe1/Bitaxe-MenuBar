@@ -94,7 +94,6 @@ If the app seems to show old data:
 
 ```bash
 # Update to latest version
-brew update jeppepeppe1/bitaxe-menubar
 brew upgrade bitaxe-menubar
 
 # Restart the app
