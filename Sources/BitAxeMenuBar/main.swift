@@ -87,7 +87,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     let tText = asicTemp >= 65 ? "🔥 T \(Int(asicTemp))°C" : "T \(Int(asicTemp))°C"
                     let vrText = vrTemp >= 86 ? "🔥 VR \(Int(vrTemp))°C" : "VR \(Int(vrTemp))°C"
                     
-                    let statusText = "⛏️ \(String(format: "%.2f", hashrateTH)) TH/s | \(tText) | \(vrText)"
+                    let statusText = "⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | \(tText) | \(vrText)"
                     
                     // Create attributed string with conditional coloring
                     let attributedString = NSMutableAttributedString(string: statusText)
