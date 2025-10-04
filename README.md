@@ -2,6 +2,9 @@
 
 A simple macOS menu bar app that displays your Bitaxe miner's hashrate and temperature with real-time monitoring and notifications.
 
+<img width="600" height="148" alt="bitaxe-menubar" src="https://github.com/user-attachments/assets/34c222ef-6b28-42eb-aeda-062b3d1c3009" />
+
+
 ## Features
 
 - **Live Monitoring**: Displays hashrate, ASIC temperature, and VR temperature
