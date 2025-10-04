@@ -19,10 +19,20 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 
 - **ASIC Temperature**: Red when ≥ 65°C
 - **VR Temperature**: Red when ≥ 86°C
+
 **Examples**
 - `⛏️ 1.40 TH/s | T 62°C | VR 67°C` - Normal operation (green)
 - `⛏️ 1.40 TH/s | 🔥 T 67°C | VR 67°C` - High ASIC temperature (red)
 - `⛏️ 1.40 TH/s | T 62°C | 🔥 VR 88°C` - High VR temperature (red)
+
+**MenuBar States Text Color**
+- 🟢 Connected: Live data display
+- 🟠 Config Needed: Configuration prompt
+- ⚪ Timeout: Request timeout handling
+- ⚪ Connecting: Connection attempt feedback
+- 🔴 Server Error: BitAxe-specific errors
+- 🔴 Network Error: Network connectivity issues
+
 
 ## Installation
 
