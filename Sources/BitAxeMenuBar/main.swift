@@ -1,6 +1,16 @@
 import Foundation
 import AppKit
 
+// Connection states
+enum ConnectionState {
+    case configured    // IP set, ready to connect
+    case connecting    // Attempting to connect
+    case connected     // Successfully connected
+    case networkError  // Network unreachable
+    case timeout       // Request timed out
+    case serverError   // BitAxe responded with error
+}
+
 // Configuration management
 class AppConfig {
     private let userDefaults = UserDefaults(suiteName: "com.bitaxe.menubar") ?? UserDefaults.standard
@@ -35,6 +45,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var timer: Timer?
     var lastNotificationTime: Date?
     var config: AppConfig!
+    var connectionState: ConnectionState = .configured
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Load configuration
@@ -61,26 +72,64 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func updateMinerData() {
         // Check if BitAxe IP is configured
         guard config.isConfigured, let apiURL = config.apiURL else {
-            // Show configuration prompt
-            DispatchQueue.main.async {
-                let statusText = "⛏️ Configure IP..."
-                let attributedString = NSMutableAttributedString(string: statusText)
-                attributedString.addAttribute(.foregroundColor, value: NSColor.systemOrange, range: NSRange(location: 0, length: statusText.utf16.count))
-                self.statusItem.button?.attributedTitle = attributedString
-            }
+            connectionState = .configured
+            showMenuBarState(.configured)
             return
         }
         
-        guard let url = URL(string: apiURL) else { return }
+        guard let url = URL(string: apiURL) else { 
+            connectionState = .serverError
+            showMenuBarState(.serverError)
+            return 
+        }
         
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        // Set connecting state
+        connectionState = .connecting
+        showMenuBarState(.connecting)
+        
+        // Create request with timeout
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10.0
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
+                // Handle network errors
+                if let error = error {
+                    if (error as NSError).code == NSURLErrorTimedOut {
+                        self.connectionState = .timeout
+                        self.showMenuBarState(.timeout)
+                    } else if (error as NSError).code == NSURLErrorCannotConnectToHost ||
+                              (error as NSError).code == NSURLErrorNetworkConnectionLost ||
+                              (error as NSError).code == NSURLErrorNotConnectedToInternet {
+                        self.connectionState = .networkError
+                        self.showMenuBarState(.networkError)
+                    } else {
+                        self.connectionState = .serverError
+                        self.showMenuBarState(.serverError)
+                    }
+                    return
+                }
+                
+                // Handle HTTP response errors
+                if let httpResponse = response as? HTTPURLResponse {
+                    if httpResponse.statusCode >= 400 {
+                        self.connectionState = .serverError
+                        self.showMenuBarState(.serverError)
+                        return
+                    }
+                }
+                
+                // Parse successful response
                 if let data = data,
                    let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let hashrate = json["hashRate"] as? Double,
                    let asicTemp = json["temp"] as? Double,
                    let vrTemp = json["vrTemp"] as? Double {
                     
+                    self.connectionState = .connected
                     let hashrateTH = hashrate / 1000
                     
                     // Add fire emoji for hot temperatures
@@ -116,15 +165,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     self.statusItem.button?.attributedTitle = attributedString
                     
                 } else {
-                    // Offline state - red color
-                    let statusText = "⛏️ -- TH/s | T --°C | VR --°C"
-                    let attributedString = NSMutableAttributedString(string: statusText)
-                    attributedString.addAttribute(.foregroundColor, value: NSColor.systemRed, range: NSRange(location: 0, length: statusText.utf16.count))
-                    
-                    self.statusItem.button?.attributedTitle = attributedString
+                    // Invalid response data
+                    self.connectionState = .serverError
+                    self.showMenuBarState(.serverError)
                 }
             }
         }.resume()
+    }
+    
+    func showMenuBarState(_ state: ConnectionState) {
+        let (statusText, color) = getStateDisplay(state)
+        let attributedString = NSMutableAttributedString(string: statusText)
+        attributedString.addAttribute(.foregroundColor, value: color, range: NSRange(location: 0, length: statusText.utf16.count))
+        self.statusItem.button?.attributedTitle = attributedString
+    }
+    
+    func getStateDisplay(_ state: ConnectionState) -> (String, NSColor) {
+        switch state {
+        case .configured:
+            return ("⛏️ Configure IP...", .systemOrange)
+        case .connecting:
+            return ("⛏️ Connecting... | T --°C | VR --°C", .systemGray)
+        case .connected:
+            // This will be overridden by the actual data display
+            return ("⛏️ Connected", .systemGreen)
+        case .networkError:
+            return ("⛏️ No Connection | Check Network", .systemRed)
+        case .timeout:
+            return ("⛏️ Timeout | Retrying...", .systemGray)
+        case .serverError:
+            return ("⛏️ Server Error | Check BitAxe", .systemRed)
+        }
     }
     
     func showSystemNotification(title: String, message: String) {
