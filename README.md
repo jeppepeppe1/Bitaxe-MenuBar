@@ -55,9 +55,10 @@ bitaxe-menubar
 
 ### First Time Setup
 The app requires configuration before use:
-1. Run the app - it will show "⛏️ Configure IP..." in the menu bar
+1. Run the app: `bitaxe-menubar &` (the & runs it in background)
 2. Use the CLI command to set your BitAxe IP address: `bitaxe-config YOUR_IP`
 3. The app will immediately start monitoring your miner
+4. You can now close the terminal - the app runs independently
 
 ## Temperature Thresholds
 

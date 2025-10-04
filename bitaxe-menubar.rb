@@ -42,7 +42,9 @@ class BitaxeMenubar < Formula
       BitAxe MenuBar has been installed!
       
       To run BitAxe MenuBar:
-        bitaxe-menubar
+        bitaxe-menubar &
+        
+      Note: The & runs it in background so you can close the terminal.
       
       To configure your BitAxe IP address via CLI:
         bitaxe-config 192.168.1.100
