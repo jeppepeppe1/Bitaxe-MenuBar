@@ -43,10 +43,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create status bar item
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         
-        // Create menu with configuration and quit options
+        // Create menu with quit option
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Configure BitAxe IP...", action: #selector(showConfig), keyEquivalent: ","))
-        menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit AxeBar", action: #selector(quit), keyEquivalent: "q"))
         statusItem.menu = menu
         
@@ -59,30 +57,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.terminate(nil)
     }
     
-    @objc func showConfig() {
-        let alert = NSAlert()
-        alert.messageText = "Configure BitAxe IP Address"
-        alert.informativeText = "Enter the IP address of your BitAxe miner:"
-        alert.addButton(withTitle: "OK")
-        alert.addButton(withTitle: "Cancel")
-        
-        let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 200, height: 24))
-        input.stringValue = config.bitaxeIP ?? ""
-        input.placeholderString = "e.g., 192.168.1.100"
-        alert.accessoryView = input
-        
-        let response = alert.runModal()
-        if response == .alertFirstButtonReturn {
-            let newIP = input.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !newIP.isEmpty {
-                config.bitaxeIP = newIP
-                print("BitAxe IP updated to: \(newIP)")
-            } else {
-                config.bitaxeIP = nil
-                print("BitAxe IP cleared")
-            }
-        }
-    }
     
     @objc func updateMinerData() {
         // Check if BitAxe IP is configured

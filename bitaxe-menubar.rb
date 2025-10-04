@@ -53,10 +53,7 @@ class BitaxeMenubar < Formula
         3. Click + and add bitaxe-menubar
       
       The app requires configuration before use. Configure your BitAxe IP address:
-        1. Run the app
-        2. Click the menu bar icon
-        3. Select "Configure BitAxe IP..."
-        4. Enter your BitAxe's IP address
+        bitaxe-config 192.168.1.100
     EOS
   end
 

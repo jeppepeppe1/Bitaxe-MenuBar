@@ -23,47 +23,15 @@ brew tap jeppepeppe1/bitaxe-menubar
 brew install bitaxe-menubar
 ```
 
-### Manual Installation
+### Uninstalling
 
 ```bash
-# Install terminal-notifier dependency first
-brew install terminal-notifier
+# Uninstall the app
+brew uninstall bitaxe-menubar
 
-# Clone and build
-git clone https://github.com/jeppepeppe1/BitAxe-MenuBar.git
-cd BitAxe-MenuBar
-swift build --configuration release
-./.build/release/bitaxe-menubar
+# Remove the tap (optional)
+brew untap jeppepeppe1/bitaxe-menubar
 ```
-
-## Development
-
-### Quick Commands
-
-```bash
-# Build the app
-make build
-
-# Test the app
-make test
-
-# Clean build artifacts
-make clean
-
-# Show project status
-make status
-
-# Interactive project manager
-make manage
-```
-
-### Project Management
-
-This project includes automated tools for managing both the main application and Homebrew distribution:
-
-- **`make manage`** - Interactive project manager with menu options
-- **`./manage-project.sh`** - Full-featured project management script
-- **`./setup-homebrew-tap.sh`** - Automated Homebrew tap setup
 
 ## Usage
 
@@ -75,7 +43,8 @@ Just run `bitaxe-menubar` and you'll see your miner's status in the menu bar:
 
 ## Configuration
 
-### Via CLI (Recommended)
+### Via CLI
+
 ```bash
 # Set your BitAxe IP address
 bitaxe-config 192.168.1.100
@@ -84,25 +53,11 @@ bitaxe-config 192.168.1.100
 bitaxe-menubar
 ```
 
-### Via Menu (Alternative)
-1. Run the app
-2. Click the menu bar icon (⛏️)
-3. Select "Configure BitAxe IP..."
-4. Enter your BitAxe's IP address
-
-### Via Source Code (Advanced)
-Edit `Sources/BitAxeMenuBar/main.swift` and change the default IP address:
-
-```swift
-private let defaultIP = "YOUR_BITAXE_IP"  // Line 8
-```
-
 ### First Time Setup
 The app requires configuration before use:
 1. Run the app - it will show "⛏️ Configure IP..." in the menu bar
-2. Click the menu bar icon and select "Configure BitAxe IP..."
-3. Enter your BitAxe's IP address
-4. The app will immediately start monitoring your miner
+2. Use the CLI command to set your BitAxe IP address: `bitaxe-config YOUR_IP`
+3. The app will immediately start monitoring your miner
 
 ## Temperature Thresholds
 
