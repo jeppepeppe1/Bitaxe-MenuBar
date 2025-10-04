@@ -3,9 +3,6 @@
 .swiftpm/
 Package.resolved
 
-# Keep original logo files in root for reference
-# Resources are copied to Sources/BitAxeMenuBar/Resources/ during build
-
 # Xcode
 *.xcodeproj/
 *.xcworkspace/
@@ -34,19 +31,7 @@ DerivedData/
 # Logs
 *.log
 
-# Python (for the old Python version)
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Ruby (for old Ruby version)
+# Development artifacts
 *.gem
 *.rbc
 /.config
