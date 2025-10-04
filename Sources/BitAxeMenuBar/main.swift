@@ -3,7 +3,7 @@ import AppKit
 
 // Configuration management
 class AppConfig {
-    private let userDefaults = UserDefaults.standard
+    private let userDefaults = UserDefaults(suiteName: "com.bitaxe.menubar") ?? UserDefaults.standard
     private let bitaxeIPKey = "BitAxeIP"
     
     var bitaxeIP: String? {
