@@ -12,6 +12,17 @@ A simple macOS menu bar app that displays your Bitaxe miner's hashrate and tempe
 - **Auto-refresh**: Updates every 5 seconds
 - **Real-time Data**: Uses live API data from your BitAxe miner
 
+## Temperature Thresholds
+
+- **ASIC Temperature**: Red when ≥ 65°C
+- **VR Temperature**: Red when ≥ 86°C
+- **Notifications**: Sent when thresholds are exceeded (max once per 30 seconds)
+
+**Examples**
+- `⛏️ 1.40 TH/s | T 62°C | VR 67°C` - Normal operation (green)
+- `⛏️ 1.40 TH/s | 🔥 T 67°C | VR 67°C` - High ASIC temperature (red)
+- `⛏️ 1.40 TH/s | T 62°C | 🔥 VR 88°C` - High VR temperature (red)
+
 ## Installation
 
 ### Via Homebrew (Recommended)
@@ -25,6 +36,16 @@ brew tap jeppepeppe1/bitaxe-menubar
 brew install bitaxe-menubar
 ```
 
+### Run it
+
+```bash
+# Set your BitAxe IP address
+bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
+
+# Restart the app to apply changes
+bitaxe-menubar
+```
+
 ### Uninstalling
 
 ```bash
@@ -34,39 +55,6 @@ brew uninstall bitaxe-menubar
 # Remove the tap (optional)
 brew untap jeppepeppe1/bitaxe-menubar
 ```
-
-## Usage
-
-Just run `bitaxe-menubar` and you'll see your miner's status in the menu bar:
-
-- `⛏️ 1.40 TH/s | T 62°C | VR 67°C` - Normal operation (green)
-- `⛏️ 1.40 TH/s | 🔥 T 67°C | VR 67°C` - High ASIC temperature (red)
-- `⛏️ 1.40 TH/s | T 62°C | 🔥 VR 88°C` - High VR temperature (red)
-
-## Configuration
-
-### Via CLI
-
-```bash
-# Set your BitAxe IP address
-bitaxe-config 192.168.1.100
-
-# Restart the app to apply changes
-bitaxe-menubar
-```
-
-### First Time Setup
-The app requires configuration before use:
-1. Run the app: `bitaxe-menubar &` (the & runs it in background)
-2. Use the CLI command to set your BitAxe IP address: `bitaxe-config YOUR_IP`
-3. The app will immediately start monitoring your miner
-4. You can now close the terminal - the app runs independently
-
-## Temperature Thresholds
-
-- **ASIC Temperature**: Red when ≥ 65°C
-- **VR Temperature**: Red when ≥ 86°C
-- **Notifications**: Sent when thresholds are exceeded (max once per 30 seconds)
 
 ## Troubleshooting
 
