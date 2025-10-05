@@ -125,9 +125,9 @@ bitaxe-menubar &
 
 ## 📋 Requirements
 
-- **Device: Mac**: macOS 13.0+ (Ventura or later)
-- **Device: Bitaxe**: Bitaxe Max, Ultra, Hex, Supra or Gamma.
-- **Network:** Network with both devices connected** 
+- **Device:** Mac w/ macOS 13.0+ (Ventura or later)
+- **Device:** Bitaxe Max, Ultra, Hex, Supra or Gamma
+- **Network:** With both devices connected 
 
 ## 🔗 Links
 
