@@ -27,38 +27,39 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
   - 🔴 Critical: > 80°C
 
 
-## 🚀 Installation
+## 🚀 Installation Commands
 
-### Via Homebrew (Recommended)
-
-#### 1. Install Homebrew
+### **First-Time Installation (Complete Setup)**
 ```bash
+# Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Complete installation with IP configuration
+brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config 192.168.1.100 && bitaxe-menubar &
 ```
 
-#### First time: Complete Installation, Configuration & Launch
+### **Update Existing Installation**
 ```bash
-brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && bitaxe-menubar &
-```
-
-#### Update & Restart
-```bash
+# Update to latest version and restart
 brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-#### Configure and Launch
+### **Quick Restart (No Update)**
 ```bash
-bitaxe-config <YOUR_IP> && bitaxe-menubar &
-```
-
-#### Uninstall (Everything)
-```bash
-pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepeppe1/bitaxe-menubar
-```
-
-#### Quick Restart
-```bash
+# Just restart the app (useful after configuration changes)
 pkill -f bitaxe-menubar && bitaxe-menubar &
+```
+
+### **Reconfigure IP Address**
+```bash
+# Change IP address and restart
+bitaxe-config YOUR_NEW_IP_ADDRESS && pkill -f bitaxe-menubar && bitaxe-menubar &
+```
+
+### **Complete Uninstall**
+```bash
+# Remove everything completely
+pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepeppe1/bitaxe-menubar
 ```
 
 ## 🛠️ Dialog Messages & Troubleshooting
