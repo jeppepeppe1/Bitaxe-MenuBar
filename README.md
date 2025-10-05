@@ -96,24 +96,34 @@ bitaxe-menubar &
 ### Common Issues
 
 #### **App Shows "Configure IP"**
-- **Cause**: No IP address configured
-- **Solution**: Run `bitaxe-config <YOUR_IP_ADDRESS>`
+- **First-time setup**: App was installed and IP Address was not configured
+- **Fresh installation**: App was reinstalled and lost previous IP configuration
+- **Settings reset**: User cleared app data or reset to defaults
+- **New BitAxe device**: User got a new BitAxe and needs to configure its IP
+- **IP configuration cleared**: User manually removed the stored IP address
+- **App update**: After major app updates that reset configuration
+- **Multiple BitAxe devices**: User wants to switch to a different BitAxe device
 
 #### **App Shows "Network Error"**
-- **Cause**: Cannot reach BitAxe device
-- **Solutions**:
-  - Verify BitAxe is powered on and connected to network
-  - Check IP address is correct
-  - Ensure no firewall blocking the connection
-  - Verify you're on the same network as the BitAxe
+- **Unreachable IP**: Invalid IP address
+- **Device offline**: BitAxe is powered off or disconnected from network
+- **Network issues**: WiFi disconnected, router problems, internet outage
+- **Wrong IP**: User configured incorrect IP address for their BitAxe
+- **Firewall blocking**: Network firewall blocking the connection to BitAxe
+- **Connection timeout**: BitAxe device takes too long to respond
+- **Wrong network**: User is on different network than BitAxe device
 
 #### **App Shows "Device Issue"**
 - **Cause**: BitAxe device not responding properly
-- **Solutions**:
-  - Check BitAxe web interface directly
-  - Restart BitAxe device
-  - Verify BitAxe firmware is up to date
-  - Check for hardware issues
+- **Device malfunction**: BitAxe hardware failure or software crash
+- **Wrong firmware**: BitAxe running incompatible or corrupted firmware
+- **API service down**: BitAxe web interface not responding or crashed
+- **Device overheating**: BitAxe shut down due to thermal protection
+- **Mining software crash**: BitAxe mining process stopped or crashed
+- **Device booting**: BitAxe is starting up and not ready yet
+- **Wrong device type**: Connected to non-BitAxe device at configured IP
+- **Device maintenance**: BitAxe in maintenance mode or being updated
+- **Hardware failure**: BitAxe ASIC or other components malfunctioning
 
 #### **SHA-256 Hash Mismatch Error**
 ```bash
