@@ -32,45 +32,28 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 ### Via Homebrew (Recommended)
 
 ```bash
-# Install Homebrew (if not already installed)
+## 🍺 1. Install Homebrew (if not already installed)
+```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Add the tap (only needed once)
-brew tap jeppepeppe1/bitaxe-menubar
-
-# Install BitAxe MenuBar
-brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar
 ```
 
-### Configuration
-
+## 📦 2. Complete Installation & Configuration
 ```bash
-# Set your BitAxe IP address
-bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
+brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config 192.168.1.100 && bitaxe-menubar &
 ```
 
-### Launch App
-
+## 🔄 3. Update & Restart
 ```bash
-# Start the app
-bitaxe-menubar &
+brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-### Update Commands
+## 🗑️ 4. Complete Uninstall
 ```bash
-# Update Homebrew and upgrade BitAxe MenuBar
-brew update && brew upgrade bitaxe-menubar
-
-# Alternative - update just the app
-brew upgrade jeppepeppe1/bitaxe-menubar/bitaxe-menubar
-
-# Check current version
-brew list --versions bitaxe-menubar
+pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepeppe1/bitaxe-menubar
 ```
 
-### Restart App After Update
+## ⚡ 5. Quick Restart
 ```bash
-# Stop and restart the app (allows closing terminal)
 pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
