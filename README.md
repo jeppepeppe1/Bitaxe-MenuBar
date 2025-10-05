@@ -125,18 +125,16 @@ bitaxe-menubar &
 
 ## 📋 Requirements
 
-- **macOS**: 13.0+ (Ventura or later)
-- **Swift**: 5.8+ (for building from source)
-- **Network**: BitAxe device on your local network
-- **Dependencies**: `terminal-notifier` (installed automatically via Homebrew)
+- **Device: Mac**: macOS 13.0+ (Ventura or later)
+- **Device: Bitaxe**: Bitaxe Max, Ultra, Hex, Supra or Gamma.
+- **Network:** Network with both devices connected** 
 
 ## 🔗 Links
 
-- **Repository**: [https://github.com/jeppepeppe1/BitAxe-MenuBar](https://github.com/jeppepeppe1/BitAxe-MenuBar)
 - **Homebrew Tap**: [https://github.com/jeppepeppe1/homebrew-bitaxe-menubar](https://github.com/jeppepeppe1/homebrew-bitaxe-menubar)
 - **BitAxe Documentation**: [https://osmu.wiki/bitaxe/api/](https://osmu.wiki/bitaxe/api/)
 - **ESP-Miner API**: [https://github.com/bitaxeorg/ESP-Miner](https://github.com/bitaxeorg/ESP-Miner)
 
-## 🛟 Getting Help
+## 🧑‍💻 Community
 
-- **General Bitaxe Help**: https://discord.com/invite/osmu
+- **Open Source Miners United**: https://discord.com/invite/osmu
