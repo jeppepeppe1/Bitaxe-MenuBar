@@ -532,21 +532,12 @@ class BitaxePopoverViewController: NSViewController {
                 self.deviceIssueButtonContainer.isHidden = false
                 self.connectedButtonContainer.isHidden = true
                } else {
-                   // Connected state - show appropriate button container based on update availability
+                   // Connected state - always show single grey button
                    self.notConfiguredButtonContainer.isHidden = true
                    self.networkErrorButtonContainer.isHidden = true
                    self.deviceIssueButtonContainer.isHidden = true
-                   
-                   // Show the appropriate connected button container
-                   if self.updateAvailableView.isHidden {
-                       // No updates available - show single button
-                       self.connectedButtonContainer.isHidden = true
-                       self.connectedNoUpdateButtonContainer.isHidden = false
-                   } else {
-                       // Updates available - show two buttons
-                       self.connectedButtonContainer.isHidden = false
-                       self.connectedNoUpdateButtonContainer.isHidden = true
-                   }
+                   self.connectedButtonContainer.isHidden = true
+                   self.connectedNoUpdateButtonContainer.isHidden = false
                }
         }
     }
