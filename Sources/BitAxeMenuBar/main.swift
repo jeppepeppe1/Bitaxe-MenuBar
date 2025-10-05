@@ -1,6 +1,125 @@
 import Foundation
 import AppKit
 
+// MARK: - App Constants
+struct AppConstants {
+    // Version Management
+    static let version = "1.0.9"
+    
+    // URLs
+    static let githubBaseURL = "https://github.com/jeppepeppe1/BitAxe-MenuBar"
+    static let githubReleasesURL = "\(githubBaseURL)/releases"
+    static let githubTroubleshootingURL = "\(githubBaseURL)#troubleshooting"
+    
+    // Temperature Thresholds
+    static let asicTempThreshold: Double = 65.0
+    static let vrTempThreshold: Double = 80.0
+    
+    // API Configuration
+    static let apiEndpoint = "/api/system/info"
+    static let updateInterval: TimeInterval = 5.0
+    static let notificationCooldown: TimeInterval = 300.0 // 5 minutes
+}
+
+// MARK: - App State Enum
+enum AppState {
+    case notConfigured
+    case networkError
+    case deviceIssue
+    case connected
+    case connectedPartialData
+    case connectedMissingVRTemp
+}
+
+// MARK: - Button Configuration
+struct ButtonConfig {
+    let title: String
+    let action: Selector
+    let color: NSColor
+    let isUpdateButton: Bool
+}
+
+// MARK: - Button Container Factory
+class ButtonContainerFactory {
+    static func createButtonContainer(buttons: [ButtonConfig], target: AnyObject) -> NSView {
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        
+        if buttons.count == 1 {
+            // Single button layout
+            let button = createButton(from: buttons[0], target: target)
+            container.addSubview(button)
+            NSLayoutConstraint.activate([
+                button.topAnchor.constraint(equalTo: container.topAnchor),
+                button.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                button.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                button.heightAnchor.constraint(equalToConstant: 32),
+                button.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+            ])
+        } else if buttons.count == 2 {
+            // Two button side-by-side layout
+            let leftButton = createButton(from: buttons[0], target: target)
+            let rightButton = createButton(from: buttons[1], target: target)
+            
+            container.addSubview(leftButton)
+            container.addSubview(rightButton)
+            
+            NSLayoutConstraint.activate([
+                // Left button
+                leftButton.topAnchor.constraint(equalTo: container.topAnchor),
+                leftButton.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                leftButton.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.48),
+                leftButton.heightAnchor.constraint(equalToConstant: 32),
+                leftButton.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+                
+                // Right button
+                rightButton.topAnchor.constraint(equalTo: container.topAnchor),
+                rightButton.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                rightButton.widthAnchor.constraint(equalTo: container.widthAnchor, multiplier: 0.48),
+                rightButton.heightAnchor.constraint(equalToConstant: 32),
+                rightButton.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+            ])
+        }
+        
+        return container
+    }
+    
+    private static func createButton(from config: ButtonConfig, target: AnyObject) -> NSButton {
+        let button = NSButton(title: config.title, target: target, action: config.action)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        if config.isUpdateButton {
+            styleUpdateButton(button)
+        } else {
+            styleButton(button, color: config.color)
+        }
+        
+        return button
+    }
+    
+    private static func styleButton(_ button: NSButton, color: NSColor) {
+        button.wantsLayer = true
+        button.layer?.backgroundColor = color.withAlphaComponent(0.1).cgColor
+        button.layer?.cornerRadius = 6
+        button.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        button.contentTintColor = color
+        button.isBordered = false
+        button.focusRingType = .none
+    }
+    
+    private static func styleUpdateButton(_ button: NSButton) {
+        button.wantsLayer = true
+        button.layer?.backgroundColor = NSColor.clear.cgColor
+        button.layer?.cornerRadius = 6
+        button.layer?.borderWidth = 1
+        button.layer?.borderColor = NSColor.systemGray.cgColor
+        button.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        button.contentTintColor = .systemGray
+        button.isBordered = false
+        button.focusRingType = .none
+    }
+}
+
 // MARK: - Layout Configuration
 struct PopoverLayout {
     static let width: CGFloat = 280
@@ -269,163 +388,63 @@ class BitaxePopoverViewController: NSViewController {
     
     private func setupButtonContainers() {
         // Not Configured Button Container
-        notConfiguredButtonContainer = NSView()
-        notConfiguredButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let configureIPButton = NSButton(title: "Configure IP", target: self, action: #selector(configureIP))
-        configureIPButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(configureIPButton, color: .systemOrange)
-        
-        notConfiguredButtonContainer.addSubview(configureIPButton)
-        NSLayoutConstraint.activate([
-            configureIPButton.topAnchor.constraint(equalTo: notConfiguredButtonContainer.topAnchor),
-            configureIPButton.leadingAnchor.constraint(equalTo: notConfiguredButtonContainer.leadingAnchor),
-            configureIPButton.trailingAnchor.constraint(equalTo: notConfiguredButtonContainer.trailingAnchor),
-            configureIPButton.heightAnchor.constraint(equalToConstant: 32),
-            configureIPButton.bottomAnchor.constraint(equalTo: notConfiguredButtonContainer.bottomAnchor)
-        ])
+        let notConfiguredButtons = [
+            ButtonConfig(title: "Configure IP", action: #selector(configureIP), color: .systemOrange, isUpdateButton: false)
+        ]
+        notConfiguredButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: notConfiguredButtons, target: self)
         
         // Network Error Button Container
-        networkErrorButtonContainer = NSView()
-        networkErrorButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let troubleshootingButton = NSButton(title: "View Troubleshooting", target: self, action: #selector(viewTroubleshooting))
-        troubleshootingButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(troubleshootingButton, color: .systemRed)
-        
-        networkErrorButtonContainer.addSubview(troubleshootingButton)
-        NSLayoutConstraint.activate([
-            troubleshootingButton.topAnchor.constraint(equalTo: networkErrorButtonContainer.topAnchor),
-            troubleshootingButton.leadingAnchor.constraint(equalTo: networkErrorButtonContainer.leadingAnchor),
-            troubleshootingButton.trailingAnchor.constraint(equalTo: networkErrorButtonContainer.trailingAnchor),
-            troubleshootingButton.heightAnchor.constraint(equalToConstant: 32),
-            troubleshootingButton.bottomAnchor.constraint(equalTo: networkErrorButtonContainer.bottomAnchor)
-        ])
+        let networkErrorButtons = [
+            ButtonConfig(title: "View Troubleshooting", action: #selector(viewTroubleshooting), color: .systemRed, isUpdateButton: false)
+        ]
+        networkErrorButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: networkErrorButtons, target: self)
         
         // Device Issue Button Container (two buttons side by side)
-        deviceIssueButtonContainer = NSView()
-        deviceIssueButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let openAxeOSButton = NSButton(title: "Open AxeOS", target: self, action: #selector(openWeb))
-        openAxeOSButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(openAxeOSButton, color: .systemOrange)
-        
-        let openGithubButton = NSButton(title: "Open Github", target: self, action: #selector(openGithub))
-        openGithubButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(openGithubButton, color: .systemOrange)
-        
-        deviceIssueButtonContainer.addSubview(openAxeOSButton)
-        deviceIssueButtonContainer.addSubview(openGithubButton)
-        
-        NSLayoutConstraint.activate([
-            // First button (left side)
-            openAxeOSButton.topAnchor.constraint(equalTo: deviceIssueButtonContainer.topAnchor),
-            openAxeOSButton.leadingAnchor.constraint(equalTo: deviceIssueButtonContainer.leadingAnchor),
-            openAxeOSButton.widthAnchor.constraint(equalTo: deviceIssueButtonContainer.widthAnchor, multiplier: 0.48),
-            openAxeOSButton.heightAnchor.constraint(equalToConstant: 32),
-            openAxeOSButton.bottomAnchor.constraint(equalTo: deviceIssueButtonContainer.bottomAnchor),
-            
-            // Second button (right side)
-            openGithubButton.topAnchor.constraint(equalTo: deviceIssueButtonContainer.topAnchor),
-            openGithubButton.trailingAnchor.constraint(equalTo: deviceIssueButtonContainer.trailingAnchor),
-            openGithubButton.widthAnchor.constraint(equalTo: deviceIssueButtonContainer.widthAnchor, multiplier: 0.48),
-            openGithubButton.heightAnchor.constraint(equalToConstant: 32),
-            openGithubButton.bottomAnchor.constraint(equalTo: deviceIssueButtonContainer.bottomAnchor)
-        ])
+        let deviceIssueButtons = [
+            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemOrange, isUpdateButton: false),
+            ButtonConfig(title: "Open Github", action: #selector(openGithub), color: .systemOrange, isUpdateButton: false)
+        ]
+        deviceIssueButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: deviceIssueButtons, target: self)
         
         // Connected Button Container (two buttons side by side)
-        connectedButtonContainer = NSView()
-        connectedButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let connectedOpenButton = NSButton(title: "Open AxeOS", target: self, action: #selector(openWeb))
-        connectedOpenButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(connectedOpenButton, color: .systemGray)
-        
-        let connectedUpdateButton = NSButton(title: "Update App", target: self, action: #selector(openGithub))
-        connectedUpdateButton.translatesAutoresizingMaskIntoConstraints = false
-        styleUpdateButton(connectedUpdateButton)
-        
-        connectedButtonContainer.addSubview(connectedOpenButton)
-        connectedButtonContainer.addSubview(connectedUpdateButton)
-        
-        NSLayoutConstraint.activate([
-            // First button (left side)
-            connectedOpenButton.topAnchor.constraint(equalTo: connectedButtonContainer.topAnchor),
-            connectedOpenButton.leadingAnchor.constraint(equalTo: connectedButtonContainer.leadingAnchor),
-            connectedOpenButton.widthAnchor.constraint(equalTo: connectedButtonContainer.widthAnchor, multiplier: 0.48),
-            connectedOpenButton.heightAnchor.constraint(equalToConstant: 32),
-            connectedOpenButton.bottomAnchor.constraint(equalTo: connectedButtonContainer.bottomAnchor),
-            
-            // Second button (right side)
-            connectedUpdateButton.topAnchor.constraint(equalTo: connectedButtonContainer.topAnchor),
-            connectedUpdateButton.trailingAnchor.constraint(equalTo: connectedButtonContainer.trailingAnchor),
-            connectedUpdateButton.widthAnchor.constraint(equalTo: connectedButtonContainer.widthAnchor, multiplier: 0.48),
-            connectedUpdateButton.heightAnchor.constraint(equalToConstant: 32),
-            connectedUpdateButton.bottomAnchor.constraint(equalTo: connectedButtonContainer.bottomAnchor)
-        ])
+        let connectedButtons = [
+            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemGray, isUpdateButton: false),
+            ButtonConfig(title: "Update App", action: #selector(openGithub), color: .systemGray, isUpdateButton: true)
+        ]
+        connectedButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: connectedButtons, target: self)
         
         // Connected No Update Button Container (single button)
-        connectedNoUpdateButtonContainer = NSView()
-        connectedNoUpdateButtonContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let connectedNoUpdateButton = NSButton(title: "Open AxeOS", target: self, action: #selector(openWeb))
-        connectedNoUpdateButton.translatesAutoresizingMaskIntoConstraints = false
-        styleButton(connectedNoUpdateButton, color: .systemGray)
-        
-        connectedNoUpdateButtonContainer.addSubview(connectedNoUpdateButton)
-        NSLayoutConstraint.activate([
-            connectedNoUpdateButton.topAnchor.constraint(equalTo: connectedNoUpdateButtonContainer.topAnchor),
-            connectedNoUpdateButton.leadingAnchor.constraint(equalTo: connectedNoUpdateButtonContainer.leadingAnchor),
-            connectedNoUpdateButton.trailingAnchor.constraint(equalTo: connectedNoUpdateButtonContainer.trailingAnchor),
-            connectedNoUpdateButton.heightAnchor.constraint(equalToConstant: 32),
-            connectedNoUpdateButton.bottomAnchor.constraint(equalTo: connectedNoUpdateButtonContainer.bottomAnchor)
-        ])
+        let connectedNoUpdateButtons = [
+            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemGray, isUpdateButton: false)
+        ]
+        connectedNoUpdateButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: connectedNoUpdateButtons, target: self)
     }
     
-    private func styleButton(_ button: NSButton, color: NSColor) {
-        button.wantsLayer = true
-        button.layer?.backgroundColor = color.withAlphaComponent(0.1).cgColor
-        button.layer?.cornerRadius = 6
-        button.font = NSFont.systemFont(ofSize: 11, weight: .medium)
-        button.contentTintColor = color
-        button.isBordered = false
-        button.focusRingType = .none
-    }
-    
-    private func styleUpdateButton(_ button: NSButton) {
-        button.wantsLayer = true
-        button.layer?.backgroundColor = NSColor.clear.cgColor
-        button.layer?.cornerRadius = 6
-        button.layer?.borderWidth = 1
-        button.layer?.borderColor = NSColor.systemGray.cgColor
-        button.font = NSFont.systemFont(ofSize: 11, weight: .medium)
-        button.contentTintColor = .systemGray
-        button.isBordered = false
-        button.focusRingType = .none
-    }
     
     // MARK: - Helper Methods
     
     private func getAppVersion() -> String {
         // Single source of truth for version number
         // Update this number when creating new releases
-        let version = "1.0.9"
-        return "v\(version)"
+        return "v\(AppConstants.version)"
     }
     
-    func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, status: String, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
+    func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, state: AppState, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
         DispatchQueue.main.async {
             // Update title with model information or configuration state
             if let model = model, !model.isEmpty {
                 self.titleLabel.stringValue = "Bitaxe \(model)"
-            } else if status == "Not Connected" {
-                self.titleLabel.stringValue = "Configure IP"
-            } else if status == "Network Error" {
-                self.titleLabel.stringValue = "Network Error"
-            } else if status == "Device Issue" {
-                self.titleLabel.stringValue = "Device Issue"
             } else {
-                self.titleLabel.stringValue = "Unknown device"
+                switch state {
+                case .notConfigured:
+                    self.titleLabel.stringValue = "Configure IP"
+                case .networkError:
+                    self.titleLabel.stringValue = "Network Error"
+                case .deviceIssue:
+                    self.titleLabel.stringValue = "Device Issue"
+                case .connected, .connectedPartialData, .connectedMissingVRTemp:
+                    self.titleLabel.stringValue = "Unknown device"
+                }
             }
             
             // Update hashrate
@@ -441,7 +460,7 @@ class BitaxePopoverViewController: NSViewController {
             // Update ASIC temperature
             if let asicTemp = asicTemp {
                 self.asicTempLabel.stringValue = "ASIC Temp: \(String(format: "%.0f", asicTemp))°C"
-                self.asicTempLabel.textColor = asicTemp > 65 ? .systemRed : .systemGreen
+                self.asicTempLabel.textColor = asicTemp > AppConstants.asicTempThreshold ? .systemRed : .systemGreen
             } else {
                 self.asicTempLabel.stringValue = "ASIC Temp: --°C"
                 self.asicTempLabel.textColor = .systemGray
@@ -450,14 +469,25 @@ class BitaxePopoverViewController: NSViewController {
             // Update VR temperature
             if let vrTemp = vrTemp {
                 self.vrTempLabel.stringValue = "VR Temp: \(String(format: "%.0f", vrTemp))°C"
-                self.vrTempLabel.textColor = vrTemp > 80 ? .systemRed : .systemGreen
+                self.vrTempLabel.textColor = vrTemp > AppConstants.vrTempThreshold ? .systemRed : .systemGreen
             } else {
                 self.vrTempLabel.stringValue = "VR Temp: --°C"
                 self.vrTempLabel.textColor = .systemGray
             }
             
             // Update status
-            self.statusLabel.stringValue = "Status: \(status)"
+            let statusText: String
+            switch state {
+            case .notConfigured:
+                statusText = "Not Connected"
+            case .networkError:
+                statusText = "Network Error"
+            case .deviceIssue:
+                statusText = "Device Issue"
+            case .connected, .connectedPartialData, .connectedMissingVRTemp:
+                statusText = "Connected"
+            }
+            self.statusLabel.stringValue = "Status: \(statusText)"
             self.statusLabel.textColor = .white
             
             // Update IP address
@@ -488,33 +518,28 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Show/hide appropriate button container based on state
-            if ip == nil {
-                // Not Configured state
+            self.hideAllButtonContainers()
+            
+            switch state {
+            case .notConfigured:
                 self.notConfiguredButtonContainer.isHidden = false
-                self.networkErrorButtonContainer.isHidden = true
-                self.deviceIssueButtonContainer.isHidden = true
-                self.connectedButtonContainer.isHidden = true
-            } else if status == "Network Error" {
-                // Network Error state
-                self.notConfiguredButtonContainer.isHidden = true
+            case .networkError:
                 self.networkErrorButtonContainer.isHidden = false
-                self.deviceIssueButtonContainer.isHidden = true
-                self.connectedButtonContainer.isHidden = true
-            } else if status == "Device Issue" {
-                // Device Issue state - show both buttons
-                self.notConfiguredButtonContainer.isHidden = true
-                self.networkErrorButtonContainer.isHidden = true
+            case .deviceIssue:
                 self.deviceIssueButtonContainer.isHidden = false
-                self.connectedButtonContainer.isHidden = true
-               } else {
-                   // Connected state - show single-button layout (no update available)
-                   self.notConfiguredButtonContainer.isHidden = true
-                   self.networkErrorButtonContainer.isHidden = true
-                   self.deviceIssueButtonContainer.isHidden = true
-                   self.connectedButtonContainer.isHidden = true
-                   self.connectedNoUpdateButtonContainer.isHidden = false
-               }
+            case .connected, .connectedPartialData, .connectedMissingVRTemp:
+                // For now, always show single-button layout (no update available)
+                self.connectedNoUpdateButtonContainer.isHidden = false
+            }
         }
+    }
+    
+    private func hideAllButtonContainers() {
+        notConfiguredButtonContainer.isHidden = true
+        networkErrorButtonContainer.isHidden = true
+        deviceIssueButtonContainer.isHidden = true
+        connectedButtonContainer.isHidden = true
+        connectedNoUpdateButtonContainer.isHidden = true
     }
     
     @objc func openWeb() {
@@ -525,25 +550,25 @@ class BitaxePopoverViewController: NSViewController {
     
     @objc func configureIP() {
         // Open GitHub repository for setup instructions
-        let url = URL(string: "https://github.com/jeppepeppe1/BitAxe-MenuBar")!
+        let url = URL(string: AppConstants.githubBaseURL)!
         NSWorkspace.shared.open(url)
     }
     
     @objc func viewTroubleshooting() {
         // Open GitHub repository troubleshooting section
-        let url = URL(string: "https://github.com/jeppepeppe1/BitAxe-MenuBar#troubleshooting")!
+        let url = URL(string: AppConstants.githubTroubleshootingURL)!
         NSWorkspace.shared.open(url)
     }
     
     @objc func openGithub() {
         // Open GitHub repository
-        let url = URL(string: "https://github.com/jeppepeppe1/BitAxe-MenuBar")!
+        let url = URL(string: AppConstants.githubBaseURL)!
         NSWorkspace.shared.open(url)
     }
     
     @objc func openGithubReleases() {
         // Open GitHub releases page
-        let url = URL(string: "https://github.com/jeppepeppe1/BitAxe-MenuBar/releases")!
+        let url = URL(string: AppConstants.githubReleasesURL)!
         NSWorkspace.shared.open(url)
     }
     
@@ -575,7 +600,7 @@ class AppConfig {
     
     var apiURL: String? {
         guard let ip = bitaxeIP else { return nil }
-        return "http://\(ip)/api/system/info"
+        return "http://\(ip)\(AppConstants.apiEndpoint)"
     }
     
     var isConfigured: Bool {
@@ -607,7 +632,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.target = self
         
         // Start timer for periodic updates
-        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { _ in
+        timer = Timer.scheduledTimer(withTimeInterval: AppConstants.updateInterval, repeats: true) { _ in
             self.updateMinerData()
         }
         
@@ -642,7 +667,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     func updateMinerData() {
         guard let apiURL = config.apiURL else {
             showMenuBarState("⛏️ Configure IP", color: .systemOrange)
-            popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, status: "Not Connected", ip: nil, model: nil, frequency: nil, coreVoltage: nil)
+            popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .notConfigured, ip: nil, model: nil, frequency: nil, coreVoltage: nil)
             return
         }
         
@@ -655,7 +680,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         hashrate: nil,
                         asicTemp: nil,
                         vrTemp: nil,
-                        status: "Network Error",
+                        state: .networkError,
                         ip: self?.config.bitaxeIP,
                         model: nil,
                         frequency: nil,
@@ -670,7 +695,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         hashrate: nil,
                         asicTemp: nil,
                         vrTemp: nil,
-                        status: "Device Issue",
+                        state: .deviceIssue,
                         ip: self?.config.bitaxeIP,
                         model: nil,
                         frequency: nil,
@@ -691,13 +716,18 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                     
                     let model = self?.getModelName(from: boardVersion)
                     
+                    // Determine state based on data availability
+                    let state: AppState
                     if let hashrate = hashrate, let asicTemp = asicTemp, let vrTemp = vrTemp {
+                        state = .connected
                         let hashrateTH = hashrate / 1000.0
                         self?.showMenuBarState("⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | A \(String(format: "%.0f", asicTemp))°C | VR \(String(format: "%.0f", vrTemp))°C", color: .systemGreen)
                     } else if let hashrate = hashrate, let asicTemp = asicTemp {
+                        state = .connectedMissingVRTemp
                         let hashrateTH = hashrate / 1000.0
                         self?.showMenuBarState("⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | A \(String(format: "%.0f", asicTemp))°C | VR --°C", color: .systemGreen)
                     } else {
+                        state = .connectedPartialData
                         self?.showMenuBarState("⛏️ Connected | Partial Data", color: .systemYellow)
                     }
                     
@@ -705,7 +735,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         hashrate: hashrate,
                         asicTemp: asicTemp,
                         vrTemp: vrTemp,
-                        status: "Connected",
+                        state: state,
                         ip: self?.config.bitaxeIP,
                         model: model,
                         frequency: frequency,
@@ -718,7 +748,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         hashrate: nil,
                         asicTemp: nil,
                         vrTemp: nil,
-                        status: "Device Issue",
+                        state: .deviceIssue,
                         ip: self?.config.bitaxeIP,
                         model: nil,
                         frequency: nil,
@@ -760,7 +790,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     
     func showNotification(title: String, message: String) {
         let now = Date()
-        if let lastTime = lastNotificationTime, now.timeIntervalSince(lastTime) < 300 {
+        if let lastTime = lastNotificationTime, now.timeIntervalSince(lastTime) < AppConstants.notificationCooldown {
             return // Don't spam notifications (max once every 5 minutes)
         }
         lastNotificationTime = now

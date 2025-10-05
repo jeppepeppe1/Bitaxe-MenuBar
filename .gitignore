@@ -60,6 +60,4 @@ main-dev.swift
 switch-to-*.sh
 
 # Internal documentation (never commit)
-APP_STATES_DOCUMENTATION.md
-BITAXE_API_REFERENCE.md
-TESTING_AND_CLEANUP_GUIDELINES.md
+DEVELOPMENT_DOCUMENTS/
