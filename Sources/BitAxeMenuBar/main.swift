@@ -676,7 +676,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         let url = URL(string: apiURL)!
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             DispatchQueue.main.async {
-                if let error = error {
+                if error != nil {
                     self?.showMenuBarState("⛏️ Network Error", color: .systemRed)
                     self?.popoverViewController?.updateData(
                         hashrate: nil,
