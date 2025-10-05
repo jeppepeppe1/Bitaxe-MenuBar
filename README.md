@@ -50,23 +50,23 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 
 ## 📱 App States & Interface
 
-### **Not Configured State**
+###🟠  **State: Configure IP**
 - **Menu Bar**: `⛏️ Configure IP` (orange)
 - **Popover**: Setup guidance with "Configure IP" button
 - **Action**: Opens GitHub repository for setup instructions
 
-### **Network Error State**
+###🟠 **State: Device Issue**
+- **Menu Bar**: `⛏️ Device Issue` (orange)
+- **Popover**: Dual-action interface with two buttons:
+- "Open AxeOS" - Access BitAxe web interface
+- "Open Github" - Get support and documentation
+
+###🔴 **State: Network Error**
 - **Menu Bar**: `⛏️ Network Error` (red)
 - **Popover**: Network diagnostics with "View Troubleshooting" button
 - **Action**: Opens GitHub troubleshooting section
 
-### **Device Issue State**
-- **Menu Bar**: `⛏️ Device Issue` (orange)
-- **Popover**: Dual-action interface with two buttons:
-  - "Open AxeOS" - Access BitAxe web interface
-  - "Open Github" - Get support and documentation
-
-### **Connected State**
+###🟢 **State: Connected**
 - **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C` (green)
 - **Popover**: Full monitoring interface with:
   - Complete device information
