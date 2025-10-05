@@ -427,7 +427,8 @@ class BitaxePopoverViewController: NSViewController {
             
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
-                if !output.isEmpty && output != "fatal: not a git repository" {
+                // Check if git command was successful and not in a fatal error state
+                if process.terminationStatus == 0 && !output.isEmpty && !output.contains("fatal:") {
                     return output.hasPrefix("v") ? output : "v\(output)"
                 }
             }
