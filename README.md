@@ -71,11 +71,8 @@ brew list --versions bitaxe-menubar
 
 ### Restart App After Update
 ```bash
-# Stop the app
-pkill -f bitaxe-menubar
-
-# Start the app
-bitaxe-menubar &
+# Stop and restart the app (allows closing terminal)
+pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
 ## 🛠️ Dialog Messages & Troubleshooting
