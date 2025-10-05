@@ -33,8 +33,6 @@ class BitaxePopoverViewController: NSViewController {
     var connectedButtonContainer: NSView!
     var connectedNoUpdateButtonContainer: NSView!
     var versionLabel: NSTextField!
-    var updateAvailableView: NSView!
-    var updateButton: NSButton!
     var bottomContainerView: NSView!
     var bottomInfoContainer: NSView!
     
@@ -152,24 +150,6 @@ class BitaxePopoverViewController: NSViewController {
         bottomInfoContainer = NSView()
         bottomInfoContainer.translatesAutoresizingMaskIntoConstraints = false
         
-        // Update Available View (initially hidden)
-        updateAvailableView = NSView()
-        updateAvailableView.wantsLayer = true
-        updateAvailableView.layer?.backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.1).cgColor
-        updateAvailableView.layer?.cornerRadius = 6
-        updateAvailableView.translatesAutoresizingMaskIntoConstraints = false
-        updateAvailableView.isHidden = true
-        
-        // Update Button
-        updateButton = NSButton(title: "Update via Homebrew", target: self, action: #selector(updateViaHomebrew))
-        updateButton.font = NSFont.systemFont(ofSize: 11, weight: .medium)
-        updateButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Remove button fill and stroke, make text blue
-        updateButton.isBordered = false
-        updateButton.wantsLayer = true
-        updateButton.layer?.backgroundColor = NSColor.clear.cgColor
-        updateButton.contentTintColor = .systemBlue
     }
     
     private func addElementsToContainer(_ containerView: NSView) {
@@ -190,8 +170,6 @@ class BitaxePopoverViewController: NSViewController {
         bottomContainerView.addSubview(connectedButtonContainer)
         bottomContainerView.addSubview(connectedNoUpdateButtonContainer)
         bottomContainerView.addSubview(versionLabel)
-        bottomContainerView.addSubview(updateAvailableView)
-        updateAvailableView.addSubview(updateButton)
     }
     
     private func setupAutoLayoutConstraints(_ containerView: NSView) {
@@ -280,20 +258,10 @@ class BitaxePopoverViewController: NSViewController {
             connectedNoUpdateButtonContainer.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
             connectedNoUpdateButtonContainer.heightAnchor.constraint(equalToConstant: 32),
             
-            // Update Available View - positioned below button containers with reduced spacing (75% of rowSpacing)
-            updateAvailableView.topAnchor.constraint(equalTo: notConfiguredButtonContainer.bottomAnchor, constant: PopoverLayout.rowSpacing * 0.75),
-            updateAvailableView.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
-            updateAvailableView.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
-            updateAvailableView.heightAnchor.constraint(equalToConstant: 32),
-            
             // Version Label - positioned directly below button containers with reduced spacing (75% of rowSpacing), left aligned
             versionLabel.topAnchor.constraint(equalTo: notConfiguredButtonContainer.bottomAnchor, constant: PopoverLayout.rowSpacing * 0.75),
             versionLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
-            versionLabel.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor),
-            
-            // Update Button - centered in update view
-            updateButton.centerXAnchor.constraint(equalTo: updateAvailableView.centerXAnchor),
-            updateButton.centerYAnchor.constraint(equalTo: updateAvailableView.centerYAnchor)
+            versionLabel.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor)
         ])
     }
     
@@ -532,12 +500,12 @@ class BitaxePopoverViewController: NSViewController {
                 self.deviceIssueButtonContainer.isHidden = false
                 self.connectedButtonContainer.isHidden = true
                } else {
-                   // Connected state - show two-button layout (with update button)
+                   // Connected state - show single-button layout (no update available)
                    self.notConfiguredButtonContainer.isHidden = true
                    self.networkErrorButtonContainer.isHidden = true
                    self.deviceIssueButtonContainer.isHidden = true
-                   self.connectedButtonContainer.isHidden = false
-                   self.connectedNoUpdateButtonContainer.isHidden = true
+                   self.connectedButtonContainer.isHidden = true
+                   self.connectedNoUpdateButtonContainer.isHidden = false
                }
         }
     }
@@ -575,100 +543,8 @@ class BitaxePopoverViewController: NSViewController {
     
     
     
-    @objc func updateViaHomebrew() {
-        let alert = NSAlert()
-        alert.messageText = "Update Available"
-        alert.informativeText = """
-        A new version is available!
-        
-        To update via Homebrew:
-        1. Open Terminal
-        2. Run: brew update
-        3. Run: brew upgrade bitaxe-menubar
-        4. Restart this app
-        
-        Commands to copy:
-        brew update && brew upgrade bitaxe-menubar
-        """
-        alert.addButton(withTitle: "Copy Commands")
-        alert.addButton(withTitle: "Close")
-        
-        let response = alert.runModal()
-        if response == .alertFirstButtonReturn {
-            // Copy commands to clipboard
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString("brew update && brew upgrade bitaxe-menubar", forType: .string)
-        }
-        // "Close" button just dismisses the dialog
-    }
     
-    func checkForUpdates() {
-        print("🔍 Checking for updates...")
-        
-        // Hide update banner - no longer showing update button
-        DispatchQueue.main.async {
-            self.updateAvailableView.isHidden = true
-        }
-        return
-        
-        guard let url = URL(string: "https://api.github.com/repos/jeppepeppe1/BitAxe-MenuBar/releases/latest") else { 
-            print("❌ Invalid URL")
-            return 
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            if let error = error {
-                print("❌ API Error: \(error)")
-                return
-            }
-            
-            guard let data = data,
-                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let latestVersion = json["tag_name"] as? String else { 
-                print("❌ Failed to parse response")
-                return 
-            }
-            
-            print("✅ Found version: \(latestVersion)")
-            let currentVersion = "v1.0.0" // This should match the version in versionLabel
-            let hasUpdate = self?.compareVersions(current: currentVersion, latest: latestVersion) ?? false
-            
-            DispatchQueue.main.async {
-                if hasUpdate {
-                    self?.showUpdateAvailable(latestVersion: latestVersion)
-                } else {
-                    self?.hideUpdateAvailable()
-                }
-            }
-        }
-        task.resume()
-    }
     
-    private func compareVersions(current: String, latest: String) -> Bool {
-        // Simple version comparison - remove 'v' prefix and compare
-        let currentVersion = current.replacingOccurrences(of: "v", with: "")
-        let latestVersion = latest.replacingOccurrences(of: "v", with: "")
-        
-        return currentVersion != latestVersion
-    }
-    
-    private func showUpdateAvailable(latestVersion: String) {
-        // Only show update banner if IP is configured
-        guard config?.bitaxeIP != nil else {
-            hideUpdateAvailable()
-            return
-        }
-        
-        updateAvailableView.isHidden = false
-        updateButton.title = "Update to \(latestVersion)"
-    }
-    
-    private func hideUpdateAvailable() {
-        updateAvailableView.isHidden = true
-        
-        // When hidden, remove the spacing constraint so version label is directly below button
-        // The version label's bottom constraint to bottomContainerView will handle the layout
-    }
     
 }
 
@@ -745,10 +621,6 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         // Ensure view is loaded
         _ = popoverViewController.view
         
-        // Check for updates only if IP is configured
-        if config?.bitaxeIP != nil {
-            popoverViewController.checkForUpdates()
-        }
     }
     
     @objc func togglePopover() {
