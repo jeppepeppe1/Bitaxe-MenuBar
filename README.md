@@ -2,7 +2,7 @@
 
 A comprehensive macOS menu bar application for monitoring your BitAxe mining device with real-time status updates, interactive popover interface, and intelligent state management.
 
-<img width="600" height="148" alt="bitaxe-menubar" src="https://github.com/user-attachments/assets/34c222ef-6b28-42eb-aeda-062b3d1c3009" />
+<img width="600" height="818" alt="bitaxe-menubar" src="https://github.com/user-attachments/assets/a57adfb9-7aa8-460f-bf93-f46533ea244c" />
 
 ## 🎚️ Features
 
