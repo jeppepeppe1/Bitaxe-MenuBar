@@ -286,8 +286,8 @@ class BitaxePopoverViewController: NSViewController {
             updateAvailableView.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
             updateAvailableView.heightAnchor.constraint(equalToConstant: 32),
             
-            // Version Label - positioned below update banner with reduced spacing (75% of rowSpacing), left aligned
-            versionLabel.topAnchor.constraint(equalTo: updateAvailableView.bottomAnchor, constant: PopoverLayout.rowSpacing * 0.75),
+            // Version Label - positioned directly below button containers with reduced spacing (75% of rowSpacing), left aligned
+            versionLabel.topAnchor.constraint(equalTo: notConfiguredButtonContainer.bottomAnchor, constant: PopoverLayout.rowSpacing * 0.75),
             versionLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
             versionLabel.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor),
             
@@ -532,12 +532,12 @@ class BitaxePopoverViewController: NSViewController {
                 self.deviceIssueButtonContainer.isHidden = false
                 self.connectedButtonContainer.isHidden = true
                } else {
-                   // Connected state - always show single grey button
+                   // Connected state - show two-button layout (with update button)
                    self.notConfiguredButtonContainer.isHidden = true
                    self.networkErrorButtonContainer.isHidden = true
                    self.deviceIssueButtonContainer.isHidden = true
-                   self.connectedButtonContainer.isHidden = true
-                   self.connectedNoUpdateButtonContainer.isHidden = false
+                   self.connectedButtonContainer.isHidden = false
+                   self.connectedNoUpdateButtonContainer.isHidden = true
                }
         }
     }
@@ -604,6 +604,12 @@ class BitaxePopoverViewController: NSViewController {
     
     func checkForUpdates() {
         print("🔍 Checking for updates...")
+        
+        // Hide update banner - no longer showing update button
+        DispatchQueue.main.async {
+            self.updateAvailableView.isHidden = true
+        }
+        return
         
         guard let url = URL(string: "https://api.github.com/repos/jeppepeppe1/BitAxe-MenuBar/releases/latest") else { 
             print("❌ Invalid URL")
