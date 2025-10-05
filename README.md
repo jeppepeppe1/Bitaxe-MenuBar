@@ -1,4 +1,4 @@
-# ⛏️ BitAxe MenuBar
+# ⛏️ Bitaxe MenuBar
 
 Monitor your BitAxe from the macOS menu bar with live stats, temperature alerts, and Homebrew support.
 
