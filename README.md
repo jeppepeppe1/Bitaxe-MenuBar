@@ -35,7 +35,7 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Complete installation with IP configuration
-brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config 192.168.1.100 && bitaxe-menubar &
+brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && bitaxe-menubar &
 ```
 
 ### **Update Existing Installation**
@@ -53,7 +53,7 @@ pkill -f bitaxe-menubar && bitaxe-menubar &
 ### **Reconfigure IP Address**
 ```bash
 # Change IP address and restart
-bitaxe-config YOUR_NEW_IP_ADDRESS && pkill -f bitaxe-menubar && bitaxe-menubar &
+bitaxe-config <YOUR_IP> && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
 ### **Complete Uninstall**
