@@ -70,7 +70,7 @@ bitaxe-menubar &
 
 ## 🛠️ Dialog Messages & Troubleshooting
 
-###🟠  **State: Configure IP**
+### 🟠 **State: Configure IP** 
 - **Menu Bar**: `⛏️ Configure IP`
 - **Popover**: Setup guidance with "Configure IP" button
 - **Action**: Opens GitHub for setup instructions
@@ -84,7 +84,7 @@ bitaxe-menubar &
 - **App update**: After major app updates that reset configuration
 - **Multiple BitAxe devices**: User wants to switch to a different BitAxe device
 
-🟠 **State: Device Issue**
+### 🟠 **State: Device Issue**
 - **Menu Bar**: `⛏️ Device Issue`
 - **Popover**: Dual-action interface with two buttons:
   - "Open AxeOS" - Access BitAxe web interface
@@ -99,7 +99,7 @@ bitaxe-menubar &
 - **Connection timeout**: BitAxe device takes too long to respond
 - **Wrong network**: User is on different network than BitAxe device
 
-🔴 **State: Network Error**
+### 🔴 **State: Network Error**
 - **Menu Bar**: `⛏️ Network Error`
 - **Popover**: Network diagnostics with "View Troubleshooting" button
 - **Action**: Opens GitHub for troubleshooting
@@ -116,7 +116,7 @@ bitaxe-menubar &
 - **Device maintenance**: BitAxe in maintenance mode or being updated
 - **Hardware failure**: BitAxe ASIC or other components malfunctioning
 
-🟢 **State: Connected**
+### 🟢 **State: Connected**
 - **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C`
 - **Popover**: Full monitoring interface with:
   - Complete device information
