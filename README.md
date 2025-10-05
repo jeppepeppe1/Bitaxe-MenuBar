@@ -28,28 +28,6 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
   - 🔴 Critical: > 80°C
 
 
-## 💬 Dialog Messages
-
-
-
-🟠 **State: Device Issue**
-- **Menu Bar**: `⛏️ Device Issue`
-- **Popover**: Dual-action interface with two buttons:
-- "Open AxeOS" - Access BitAxe web interface
-- "Open Github" - Opens Github for troubleshooting
-
-🔴 **State: Network Error**
-- **Menu Bar**: `⛏️ Network Error`
-- **Popover**: Network diagnostics with "View Troubleshooting" button
-- **Action**: Opens GitHub for troubleshooting
-
-🟢 **State: Connected**
-- **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C`
-- **Popover**: Full monitoring interface with:
-  - Complete device information
-  - Model detection and display
-  - "Open AxeOS" button for quick access
-
 ## 🚀 Installation
 
 ### Via Homebrew (Recommended)
@@ -88,14 +66,14 @@ pkill -f bitaxe-menubar
 bitaxe-menubar &
 ```
 
-## 🛠️ Troubleshooting
+## 🛠️ Dialog Messages & Troubleshooting
 
 ###🟠  **State: Configure IP**
 - **Menu Bar**: `⛏️ Configure IP`
 - **Popover**: Setup guidance with "Configure IP" button
 - **Action**: Opens GitHub for setup instructions
 
-####Common Issues
+**Common Issues**
 - **First-time setup**: App was installed and IP Address was not configured
 - **Fresh installation**: App was reinstalled and lost previous IP configuration
 - **Settings reset**: User cleared app data or reset to defaults
@@ -104,7 +82,13 @@ bitaxe-menubar &
 - **App update**: After major app updates that reset configuration
 - **Multiple BitAxe devices**: User wants to switch to a different BitAxe device
 
-#### **App Shows "Network Error"**
+🟠 **State: Device Issue**
+- **Menu Bar**: `⛏️ Device Issue`
+- **Popover**: Dual-action interface with two buttons:
+  - "Open AxeOS" - Access BitAxe web interface
+  - "Open Github" - Opens Github for troubleshooting
+
+**Common Issues**
 - **Unreachable IP**: Invalid IP address
 - **Device offline**: BitAxe is powered off or disconnected from network
 - **Network issues**: WiFi disconnected, router problems, internet outage
@@ -113,7 +97,12 @@ bitaxe-menubar &
 - **Connection timeout**: BitAxe device takes too long to respond
 - **Wrong network**: User is on different network than BitAxe device
 
-#### **App Shows "Device Issue"**
+🔴 **State: Network Error**
+- **Menu Bar**: `⛏️ Network Error`
+- **Popover**: Network diagnostics with "View Troubleshooting" button
+- **Action**: Opens GitHub for troubleshooting
+
+**Common Issues**
 - **Cause**: BitAxe device not responding properly
 - **Device malfunction**: BitAxe hardware failure or software crash
 - **Wrong firmware**: BitAxe running incompatible or corrupted firmware
@@ -124,6 +113,13 @@ bitaxe-menubar &
 - **Wrong device type**: Connected to non-BitAxe device at configured IP
 - **Device maintenance**: BitAxe in maintenance mode or being updated
 - **Hardware failure**: BitAxe ASIC or other components malfunctioning
+
+🟢 **State: Connected**
+- **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C`
+- **Popover**: Full monitoring interface with:
+  - Complete device information
+  - Model detection and display
+  - "Open AxeOS" button for quick access
 
 #### **SHA-256 Hash Mismatch Error**
 ```bash
