@@ -407,9 +407,10 @@ class BitaxePopoverViewController: NSViewController {
     // MARK: - Helper Methods
     
     private func getAppVersion() -> String {
-        // For Homebrew builds, always return the current version
-        // This avoids showing Homebrew repo git hashes
-        return "v1.0.7"
+        // Single source of truth for version number
+        // Update this number when creating new releases
+        let version = "1.0.8"
+        return "v\(version)"
     }
     
     func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, status: String, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
