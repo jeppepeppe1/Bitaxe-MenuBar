@@ -53,3 +53,12 @@ DerivedData/
 # Backup files
 *.bak
 *.backup
+
+# Development files (never commit simulation code)
+*-dev.swift
+main-dev.swift
+switch-to-*.sh
+
+# Internal documentation (never commit)
+APP_STATES_DOCUMENTATION.md
+BITAXE_API_REFERENCE.md
