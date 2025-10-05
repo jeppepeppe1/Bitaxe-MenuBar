@@ -409,7 +409,7 @@ class BitaxePopoverViewController: NSViewController {
     private func getAppVersion() -> String {
         // Single source of truth for version number
         // Update this number when creating new releases
-        let version = "1.0.8"
+        let version = "1.0.9"
         return "v\(version)"
     }
     
