@@ -120,9 +120,8 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ## 📋 Requirements
 
-- **Device:** Mac w/ macOS 13.0+ (Ventura or later)
+- **macOS:** 13.0+ (Ventura or later)
 - **Device:** Bitaxe Max, Ultra, Hex, Supra or Gamma
-- **Network:** With both devices connected 
 
 ## 🔗 Links
 
