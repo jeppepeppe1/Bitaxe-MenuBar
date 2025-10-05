@@ -642,7 +642,6 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func setupPopover() {
-        print("🚀 setupPopover() called")
         popoverViewController = BitaxePopoverViewController()
         popoverViewController.config = config
         
