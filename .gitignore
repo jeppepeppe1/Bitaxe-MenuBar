@@ -61,3 +61,6 @@ switch-to-*.sh
 
 # Internal documentation (never commit)
 DEVELOPMENT_DOCUMENTS/
+
+# Version management (unused in refactored codebase)
+VERSION
