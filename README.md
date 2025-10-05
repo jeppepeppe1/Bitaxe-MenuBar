@@ -97,20 +97,6 @@ bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
 bitaxe-menubar &
 ```
 
-### From Source
-
-```bash
-# Clone the repository
-git clone https://github.com/jeppepeppe1/BitAxe-MenuBar.git
-cd BitAxe-MenuBar
-
-# Build the application
-swift build --configuration release
-
-# Run the application
-.build/release/bitaxe-menubar
-```
-
 ## 🔧 Configuration
 
 ### IP Address Setup
