@@ -90,12 +90,12 @@ bitaxe-menubar &
 
 ## 🛠️ Troubleshooting
 
-🟠  **State: Configure IP**
+###🟠  **State: Configure IP**
 - **Menu Bar**: `⛏️ Configure IP`
 - **Popover**: Setup guidance with "Configure IP" button
 - **Action**: Opens GitHub for setup instructions
 
-#### **App Shows "Configure IP"**
+####Common Issues
 - **First-time setup**: App was installed and IP Address was not configured
 - **Fresh installation**: App was reinstalled and lost previous IP configuration
 - **Settings reset**: User cleared app data or reset to defaults
