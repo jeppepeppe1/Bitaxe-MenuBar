@@ -518,28 +518,40 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Show/hide appropriate button container based on state
+            // Force immediate hiding of all containers first
             self.hideAllButtonContainers()
             
-            switch state {
-            case .notConfigured:
-                self.notConfiguredButtonContainer.isHidden = false
-            case .networkError:
-                self.networkErrorButtonContainer.isHidden = false
-            case .deviceIssue:
-                self.deviceIssueButtonContainer.isHidden = false
-            case .connected, .connectedPartialData, .connectedMissingVRTemp:
-                // For now, always show single-button layout (no update available)
-                self.connectedNoUpdateButtonContainer.isHidden = false
+            // Ensure UI updates are processed before showing new container
+            DispatchQueue.main.async {
+                switch state {
+                case .notConfigured:
+                    self.notConfiguredButtonContainer.isHidden = false
+                case .networkError:
+                    self.networkErrorButtonContainer.isHidden = false
+                case .deviceIssue:
+                    self.deviceIssueButtonContainer.isHidden = false
+                case .connected, .connectedPartialData, .connectedMissingVRTemp:
+                    // For now, always show single-button layout (no update available)
+                    self.connectedNoUpdateButtonContainer.isHidden = false
+                }
             }
         }
     }
     
     private func hideAllButtonContainers() {
+        // Force immediate hiding of all button containers to prevent overlap
         notConfiguredButtonContainer.isHidden = true
         networkErrorButtonContainer.isHidden = true
         deviceIssueButtonContainer.isHidden = true
         connectedButtonContainer.isHidden = true
         connectedNoUpdateButtonContainer.isHidden = true
+        
+        // Force immediate UI update to ensure hiding takes effect
+        notConfiguredButtonContainer.needsDisplay = true
+        networkErrorButtonContainer.needsDisplay = true
+        deviceIssueButtonContainer.needsDisplay = true
+        connectedButtonContainer.needsDisplay = true
+        connectedNoUpdateButtonContainer.needsDisplay = true
     }
     
     @objc func openWeb() {
