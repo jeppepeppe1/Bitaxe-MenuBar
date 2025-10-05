@@ -407,37 +407,9 @@ class BitaxePopoverViewController: NSViewController {
     // MARK: - Helper Methods
     
     private func getAppVersion() -> String {
-        // Try to get version from Bundle first (for built apps)
-        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-            return "v\(version)"
-        }
-        
-        // Try to get version from git tag (for development builds)
-        let process = Process()
-        process.launchPath = "/usr/bin/git"
-        process.arguments = ["describe", "--tags", "--always"]
-        
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-        
-        do {
-            try process.run()
-            process.waitUntilExit()
-            
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
-                // Check if git command was successful and not in a fatal error state
-                if process.terminationStatus == 0 && !output.isEmpty && !output.contains("fatal:") {
-                    return output.hasPrefix("v") ? output : "v\(output)"
-                }
-            }
-        } catch {
-            // Fall through to default
-        }
-        
-        // Fallback to default version
-        return "v1.0.4"
+        // For Homebrew builds, always return the current version
+        // This avoids showing Homebrew repo git hashes
+        return "v1.0.6"
     }
     
     func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, status: String, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
