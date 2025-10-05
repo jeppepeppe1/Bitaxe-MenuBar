@@ -20,7 +20,7 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 
 ### Safety Protocols
 
-####Temperature Thresholds
+#### Temperature Thredsholds
 
 - **ASIC Temperature**: 
   - 🟢 Normal: ≤ 65°C
