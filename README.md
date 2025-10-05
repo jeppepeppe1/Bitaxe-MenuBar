@@ -78,7 +78,6 @@ bitaxe-menubar &
 
 ## 🔄 Update App
 
-### Automatic Updates
 The app checks for updates and displays an update banner when new versions are available. Click "Update App" to get Homebrew update instructions.
 
 ### Manual Updates
