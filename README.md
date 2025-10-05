@@ -97,28 +97,7 @@ bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
 bitaxe-menubar &
 ```
 
-## 🔧 Configuration
-
-### IP Address Setup
-The app requires your BitAxe device's IP address to function. You can configure it in several ways:
-
-1. **Command Line** (Recommended):
-   ```bash
-   bitaxe-config 192.168.1.100
-   ```
-
-2. **Manual Configuration**:
-   - The app will show "Configure IP" in the menu bar
-   - Click to open setup instructions
-   - Follow the GitHub repository guidance
-
-### API Endpoint
-The app connects to your BitAxe device using:
-```
-http://YOUR_BITAXE_IP/api/system/info
-```
-
-## 🔄 Updates
+## 🔄 Update App
 
 ### Automatic Updates
 The app checks for updates and displays an update banner when new versions are available. Click "Update App" to get Homebrew update instructions.
@@ -167,7 +146,7 @@ brew cleanup --prune=all
 brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar
 ```
 
-#### **App Not Updating Data**
+#### **Data Not Updating**
 ```bash
 # Update to latest version
 brew upgrade bitaxe-menubar
@@ -177,69 +156,12 @@ pkill -f bitaxe-menubar
 bitaxe-menubar &
 ```
 
-### Getting Help
-- **GitHub Issues**: [Report bugs or request features](https://github.com/jeppepeppe1/BitAxe-MenuBar/issues)
-- **Documentation**: Check the repository for detailed setup guides
-- **Community**: Join BitAxe community discussions
-
 ## 📋 Requirements
 
 - **macOS**: 13.0+ (Ventura or later)
 - **Swift**: 5.8+ (for building from source)
 - **Network**: BitAxe device on your local network
 - **Dependencies**: `terminal-notifier` (installed automatically via Homebrew)
-
-## 🏗️ Architecture
-
-### **State Management**
-The app uses a sophisticated state management system with:
-- **Configuration States**: IP setup and validation
-- **Connection States**: Network connectivity monitoring
-- **Data States**: API response quality assessment
-- **UI States**: Popover visibility and update availability
-
-### **Button Container System**
-State-specific button containers ensure proper UI behavior:
-- **Not Configured Container**: Single "Configure IP" button
-- **Network Error Container**: Single "View Troubleshooting" button
-- **Device Issue Container**: Dual "Open AxeOS" + "Open Github" buttons
-- **Connected Container**: Context-aware button layout
-
-### **API Integration**
-- **Endpoint**: `http://YOUR_BITAXE_IP/api/system/info`
-- **Field Mapping**: Proper JSON field extraction and display
-- **Error Handling**: Graceful degradation for network and data issues
-- **Model Detection**: Automatic BitAxe model identification
-
-## 📊 Version History
-
-- **v1.0.2**: Complete UI overhaul with state-specific button containers
-  - Interactive popover interface
-  - Enhanced error handling and state management
-  - Improved model detection and display
-  - Fixed update banner positioning
-  - Updated Homebrew integration
-- **v1.0.1**: Improved hashrate precision (3 decimal places)
-- **v1.0.0**: Initial release with real-time monitoring
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Setup
-```bash
-# Clone the repository
-git clone https://github.com/jeppepeppe1/BitAxe-MenuBar.git
-cd BitAxe-MenuBar
-
-# Build and run
-swift build
-swift run
-```
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🔗 Links
 
@@ -248,6 +170,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - **BitAxe Documentation**: [https://osmu.wiki/bitaxe/api/](https://osmu.wiki/bitaxe/api/)
 - **ESP-Miner API**: [https://github.com/bitaxeorg/ESP-Miner](https://github.com/bitaxeorg/ESP-Miner)
 
----
+## 🛟 Getting Help
 
-**Made with ⛏️ for the BitAxe mining community**
+- **General Bitaxe Help**: https://discord.com/invite/osmu
