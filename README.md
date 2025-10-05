@@ -63,8 +63,6 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ### 🟠 **State: Configure IP** 
 - **Menu Bar**: `⛏️ Configure IP`
-- **Popover**: Setup guidance with "Configure IP" button
-- **Action**: Opens GitHub for setup instructions
 
 **Common Issues**
 - **First-time setup**: App was installed and IP Address was not configured
@@ -77,9 +75,6 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ### 🟠 **State: Device Issue**
 - **Menu Bar**: `⛏️ Device Issue`
-- **Popover**: Dual-action interface with two buttons:
-  - "Open AxeOS" - Access BitAxe web interface
-  - "Open Github" - Opens Github for troubleshooting
 
 **Common Issues**
 - **Unreachable IP**: Invalid IP address
@@ -92,8 +87,6 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ### 🔴 **State: Network Error**
 - **Menu Bar**: `⛏️ Network Error`
-- **Popover**: Network diagnostics with "View Troubleshooting" button
-- **Action**: Opens GitHub for troubleshooting
 
 **Common Issues**
 - **Cause**: BitAxe device not responding properly
@@ -109,14 +102,10 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ### 🟢 **State: Connected**
 - **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C`
-- **Popover**: Full monitoring interface with:
-  - Complete device information
-  - Model detection and display
-  - "Open AxeOS" button for quick access
-  - Dynamic version display
 
 ## 📋 Requirements
 
+- **HomeBrew:** Software package manager for macOS
 - **macOS:** 13.0+ (Ventura or later)
 - **Device:** Bitaxe Max, Ultra, Hex, Supra or Gamma
 
