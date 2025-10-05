@@ -4,7 +4,6 @@ import PackageDescription
 let package = Package(
     name: "BitAxeMenuBar",
     platforms: [.macOS(.v13)],
-    version: "1.0.4",
     products: [
         .executable(name: "bitaxe-menubar", targets: ["BitAxeMenuBar"]),
     ],
