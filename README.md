@@ -29,7 +29,7 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 
 ## 🚀 Installation Commands
 
-### **First-Time Installation (Complete Setup)**
+#### **First-Time Installation (Complete Setup)**
 ```bash
 # Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -38,25 +38,25 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && bitaxe-menubar &
 ```
 
-### **Update Existing Installation**
+###€ **Update Existing Installation**
 ```bash
 # Update to latest version and restart
 brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-### **Quick Restart (No Update)**
+###€ **Quick Restart (No Update)**
 ```bash
 # Just restart the app (useful after configuration changes)
 pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-### **Reconfigure IP Address**
+#### **Reconfigure IP Address**
 ```bash
 # Change IP address and restart
 bitaxe-config <YOUR_IP> && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-### **Complete Uninstall**
+#### **Complete Uninstall**
 ```bash
 # Remove everything completely
 pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepeppe1/bitaxe-menubar
