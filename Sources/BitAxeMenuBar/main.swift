@@ -614,13 +614,6 @@ class BitaxePopoverViewController: NSViewController {
     func checkForUpdates() {
         print("🔍 Checking for updates...")
         
-        // TEMPORARY: Force show update banner for demonstration
-        DispatchQueue.main.async {
-            self.updateAvailableView.isHidden = false
-            self.updateButton.title = "Update to v2.0.0"
-        }
-        return
-        
         guard let url = URL(string: "https://api.github.com/repos/jeppepeppe1/BitAxe-MenuBar/releases/latest") else { 
             print("❌ Invalid URL")
             return 
