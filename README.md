@@ -18,7 +18,7 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 - **Update Notifications**: In-app update alerts with copy-to-clipboard commands
 - **Version Tracking**: Automatic version checking and update availability
 
-## 🌡️ Temperature Thresholds
+### Temperature Thresholds
 
 - **ASIC Temperature**: 
   - 🟢 Normal: ≤ 65°C
@@ -27,39 +27,31 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
   - 🟢 Normal: ≤ 80°C
   - 🔴 Critical: > 80°C
 
-### Menu Bar Display Examples
-- `⛏️ 1.234 TH/s | A 62°C | VR 58°C` - Normal operation (green)
-- `⛏️ 1.234 TH/s | A 67°C | VR 58°C` - High ASIC temperature (red)
-- `⛏️ 1.234 TH/s | A 62°C | VR 82°C` - High VR temperature (red)
-- `⛏️ Configure IP` - Setup required (orange)
-- `⛏️ Network Error` - Connection issues (red)
-- `⛏️ Device Issue` - Device problems (orange)
 
-## 📱 App States & Interface
+## 💬 Dialog Messages
 
-###🟠  **State: Configure IP**
-- **Menu Bar**: `⛏️ Configure IP` (orange)
+🟠  **State: Configure IP**
+- **Menu Bar**: `⛏️ Configure IP`
 - **Popover**: Setup guidance with "Configure IP" button
-- **Action**: Opens GitHub repository for setup instructions
+- **Action**: Opens GitHub for setup instructions
 
-###🟠 **State: Device Issue**
-- **Menu Bar**: `⛏️ Device Issue` (orange)
+🟠 **State: Device Issue**
+- **Menu Bar**: `⛏️ Device Issue`
 - **Popover**: Dual-action interface with two buttons:
 - "Open AxeOS" - Access BitAxe web interface
-- "Open Github" - Get support and documentation
+- "Open Github" - Opens Github for troubleshooting
 
-###🔴 **State: Network Error**
-- **Menu Bar**: `⛏️ Network Error` (red)
+🔴 **State: Network Error**
+- **Menu Bar**: `⛏️ Network Error`
 - **Popover**: Network diagnostics with "View Troubleshooting" button
-- **Action**: Opens GitHub troubleshooting section
+- **Action**: Opens GitHub for troubleshooting
 
-###🟢 **State: Connected**
-- **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C` (green)
+🟢 **State: Connected**
+- **Menu Bar**: `⛏️ [hashrate] TH/s | A [temp]°C | VR [temp]°C`
 - **Popover**: Full monitoring interface with:
   - Complete device information
   - Model detection and display
-  - "Open AxeOS" button for web access
-  - "Update App" button (when updates available)
+  - "Open AxeOS" button for quick access
 
 ## 🚀 Installation
 
