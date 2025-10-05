@@ -123,25 +123,6 @@ bitaxe-menubar &
   - Model detection and display
   - "Open AxeOS" button for quick access
 
-#### **SHA-256 Hash Mismatch Error**
-```bash
-# Clear Homebrew cache
-brew cleanup --prune=all
-
-# Try installation again
-brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar
-```
-
-#### **Data Not Updating**
-```bash
-# Update to latest version
-brew upgrade bitaxe-menubar
-
-# Restart the app
-pkill -f bitaxe-menubar
-bitaxe-menubar &
-```
-
 ## 📋 Requirements
 
 - **macOS**: 13.0+ (Ventura or later)
