@@ -38,13 +38,13 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && bitaxe-menubar &
 ```
 
-###€ **Update Existing Installation**
+#### **Update Existing Installation**
 ```bash
 # Update to latest version and restart
 brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && bitaxe-menubar &
 ```
 
-###€ **Quick Restart (No Update)**
+#### **Quick Restart (No Update)**
 ```bash
 # Just restart the app (useful after configuration changes)
 pkill -f bitaxe-menubar && bitaxe-menubar &
