@@ -49,8 +49,11 @@ pkill -f bitaxe-menubar && bitaxe-menubar &
 
 #### **Reconfigure IP Address**
 ```bash
-# Change IP address and restart
-bitaxe-config <YOUR_IP> && pkill -f bitaxe-menubar && bitaxe-menubar &
+# Change IP address
+bitaxe-config <YOUR_IP> 
+
+# Restart
+bitaxe-menubar &
 ```
 
 #### **Complete Uninstall**
