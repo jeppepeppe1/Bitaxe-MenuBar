@@ -7,14 +7,14 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 ## 🎚️ Features
 
 ### **Core Monitoring**
-- **Model Detection**: Automatically detects BitAxe model (Gamma, Supra, Hex, Ultra, Max)
-- **Real-time Data**: Live hashrate, ASIC temperature, and VR temperature monitoring
-- **Auto-refresh**: Updates data every 5 seconds
-- **Smart Temperature Alerts**: Color-coded warnings when temperatures exceed safe thresholds
+- Model Detection: Automatically detects BitAxe model (Gamma, Supra, Hex, Ultra, Max)
+- Real-time Data: Live hashrate, ASIC temperature, and VR temperature monitoring
+- Auto-refresh: Updates data every 5 seconds
+- Smart Temperature Alerts: Color-coded warnings when temperatures exceed safe thresholds
 
 ### **Update Management**
-- **Homebrew Integration**: Seamless installaiton and updates via Homebrew package manager
-- **Dynamic Version Display**: Displays the current version and notifies you when an update is available
+- Homebrew Integration: Seamless installaiton and updates via Homebrew package manager
+- Dynamic Version Display: Displays the current version and notifies you when an update is available
 
 ### Safety Notifications
 #### Temperature Thredsholds
