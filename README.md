@@ -30,10 +30,7 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 
 ## 💬 Dialog Messages
 
-🟠  **State: Configure IP**
-- **Menu Bar**: `⛏️ Configure IP`
-- **Popover**: Setup guidance with "Configure IP" button
-- **Action**: Opens GitHub for setup instructions
+
 
 🟠 **State: Device Issue**
 - **Menu Bar**: `⛏️ Device Issue`
@@ -93,7 +90,10 @@ bitaxe-menubar &
 
 ## 🛠️ Troubleshooting
 
-### Common Issues
+🟠  **State: Configure IP**
+- **Menu Bar**: `⛏️ Configure IP`
+- **Popover**: Setup guidance with "Configure IP" button
+- **Action**: Opens GitHub for setup instructions
 
 #### **App Shows "Configure IP"**
 - **First-time setup**: App was installed and IP Address was not configured
