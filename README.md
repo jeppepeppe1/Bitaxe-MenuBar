@@ -47,12 +47,14 @@ brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar
 ```bash
 # Set your BitAxe IP address
 bitaxe-config <YOUR_BITAXE_IP_ADDRESS>
+```
 
+### Launch App
+
+```bash
 # Start the app
 bitaxe-menubar &
 ```
-
-## 🔄 Update App
 
 ### Update Commands
 ```bash
