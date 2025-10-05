@@ -15,8 +15,8 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 
 ### **Update Management**
 - **Homebrew Integration**: Seamless updates via Homebrew package manager
-- **Update Notifications**: In-app update alerts with copy-to-clipboard commands
-- **Version Tracking**: Automatic version checking and update availability
+- **Dynamic Version Display**: Shows current version automatically
+- **Easy Updates**: Simple Homebrew commands for updates
 
 ### Safety Protocols
 
@@ -38,9 +38,11 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 # Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Install BitAxe MenuBar
+# Add the tap (only needed once)
 brew tap jeppepeppe1/bitaxe-menubar
-brew install bitaxe-menubar
+
+# Install BitAxe MenuBar
+brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar
 ```
 
 ### Configuration
@@ -55,16 +57,24 @@ bitaxe-menubar &
 
 ## 🔄 Update App
 
-The app checks for updates and displays an update banner when new versions are available. Click "Update App" to get Homebrew update instructions.
-
-### Manual Updates
+### Update Commands
 ```bash
-# Update via Homebrew
-brew update
-brew upgrade bitaxe-menubar
+# Update Homebrew and upgrade BitAxe MenuBar
+brew update && brew upgrade bitaxe-menubar
 
-# Restart the app
+# Alternative - update just the app
+brew upgrade jeppepeppe1/bitaxe-menubar/bitaxe-menubar
+
+# Check current version
+brew list --versions bitaxe-menubar
+```
+
+### Restart App After Update
+```bash
+# Stop the app
 pkill -f bitaxe-menubar
+
+# Start the app
 bitaxe-menubar &
 ```
 
@@ -122,6 +132,7 @@ bitaxe-menubar &
   - Complete device information
   - Model detection and display
   - "Open AxeOS" button for quick access
+  - Dynamic version display
 
 ## 📋 Requirements
 

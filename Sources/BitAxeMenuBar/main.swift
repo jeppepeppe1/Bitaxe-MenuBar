@@ -137,7 +137,7 @@ class BitaxePopoverViewController: NSViewController {
         connectedNoUpdateButtonContainer.isHidden = true
         
         // Version Label
-        versionLabel = NSTextField(labelWithString: "Bitaxe MenuBar - v1.0.0")
+        versionLabel = NSTextField(labelWithString: "Bitaxe MenuBar - \(getAppVersion())")
         versionLabel.font = NSFont.systemFont(ofSize: 10)
         versionLabel.textColor = .systemGray
         versionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -405,6 +405,39 @@ class BitaxePopoverViewController: NSViewController {
     }
     
     // MARK: - Helper Methods
+    
+    private func getAppVersion() -> String {
+        // Try to get version from Bundle first (for built apps)
+        if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return "v\(version)"
+        }
+        
+        // Try to get version from git tag (for development builds)
+        let process = Process()
+        process.launchPath = "/usr/bin/git"
+        process.arguments = ["describe", "--tags", "--always"]
+        
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        
+        do {
+            try process.run()
+            process.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) {
+                if !output.isEmpty && output != "fatal: not a git repository" {
+                    return output.hasPrefix("v") ? output : "v\(output)"
+                }
+            }
+        } catch {
+            // Fall through to default
+        }
+        
+        // Fallback to default version
+        return "v1.0.4"
+    }
     
     func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, status: String, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
         DispatchQueue.main.async {
