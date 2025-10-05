@@ -18,7 +18,9 @@ A comprehensive macOS menu bar application for monitoring your BitAxe mining dev
 - **Update Notifications**: In-app update alerts with copy-to-clipboard commands
 - **Version Tracking**: Automatic version checking and update availability
 
-### Temperature Thresholds
+### Safety Protocols
+
+####Temperature Thresholds
 
 - **ASIC Temperature**: 
   - 🟢 Normal: ≤ 65°C
