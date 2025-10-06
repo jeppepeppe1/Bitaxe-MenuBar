@@ -2,7 +2,8 @@
 
 Monitor your BitAxe from the macOS menu bar with live stats, temperature alerts, and Homebrew support.
 
-<img width="600" height="825" alt="bitaxe-menubar" src="https://github.com/user-attachments/assets/c36df8ef-ee61-4638-8a88-274d3f972544" />
+<img width="600" height="825" alt="bitaxe-menubar" src="https://github.com/user-attachments/assets/662c88d7-99fe-4fb3-b917-82c870b04c6b" />
+
 
 
 ## 🎚️ Features
