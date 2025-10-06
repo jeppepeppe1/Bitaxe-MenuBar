@@ -62,6 +62,12 @@ bitaxe-menubar &
 pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepeppe1/bitaxe-menubar
 ```
 
+## 📋 Changelog
+
+### **v1.1.0** - Sparkline Graph
+- Added real-time hashrate sparkline graph
+- 3-second update interval for faster monitoring
+
 ## 🛠️ Dialog Messages & Troubleshooting
 
 ### 🟠 **State: Configure IP** 

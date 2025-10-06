@@ -1,10 +1,34 @@
 import Foundation
 import AppKit
 
+// Custom view to handle sparkline layout and baseline drawing
+class SparklineContainerView: NSView {
+    override func layout() {
+        super.layout()
+        // Update baseline path when view is laid out
+        updateBaselinePath()
+    }
+    
+    private func updateBaselinePath() {
+        guard let baselineLayer = layer?.sublayers?.first(where: { $0.name == "baseline" }) as? CAShapeLayer else { return }
+        
+        let width = bounds.width
+        let height = bounds.height
+        
+        guard width > 0 && height > 0 else { return }
+        
+        let baselinePath = CGMutablePath()
+        baselinePath.move(to: CGPoint(x: 0, y: height / 2)) // Center vertically
+        baselinePath.addLine(to: CGPoint(x: width, y: height / 2))
+        
+        baselineLayer.path = baselinePath
+    }
+}
+
 // MARK: - App Constants
 struct AppConstants {
     // Version Management
-    static let version = "1.0.9"
+    static let version = "1.1.0"
     
     // URLs
     static let githubBaseURL = "https://github.com/jeppepeppe1/BitAxe-MenuBar"
@@ -17,7 +41,7 @@ struct AppConstants {
     
     // API Configuration
     static let apiEndpoint = "/api/system/info"
-    static let updateInterval: TimeInterval = 5.0
+    static let updateInterval: TimeInterval = 3.0
     static let notificationCooldown: TimeInterval = 300.0 // 5 minutes
 }
 
@@ -28,6 +52,7 @@ enum AppState {
     case deviceIssue
     case connected
 }
+
 
 // MARK: - Button Configuration
 struct ButtonConfig {
@@ -143,6 +168,12 @@ class BitaxePopoverViewController: NSViewController {
     var coreVoltageLabel: NSTextField!
     var dividerAboveIP: NSView!
     var dividerAboveFrequency: NSView!
+    
+    // Sparkline Graph
+    var sparklineView: NSView!
+    var hashrateHistory: [Double] = []
+    private let maxHistoryPoints = 30
+    
     // State-specific button containers
     var notConfiguredButtonContainer: NSView!
     var networkErrorButtonContainer: NSView!
@@ -190,6 +221,25 @@ class BitaxePopoverViewController: NSViewController {
         return containerView
     }
     
+    
+    private func createSparklineView() -> NSView {
+        let view = SparklineContainerView()
+        view.wantsLayer = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Create the baseline placeholder line with same style as animated graph
+        let baselineLayer = CAShapeLayer()
+        baselineLayer.strokeColor = NSColor.systemGreen.cgColor
+        baselineLayer.fillColor = NSColor.clear.cgColor
+        baselineLayer.lineWidth = 1.5
+        baselineLayer.lineCap = .round
+        baselineLayer.lineJoin = .round
+        baselineLayer.name = "baseline"
+        view.layer?.addSublayer(baselineLayer)
+        
+        return view
+    }
+    
     private func createUIElements() {
         // Title
         titleLabel = NSTextField(labelWithString: "Bitaxe Status")
@@ -232,6 +282,9 @@ class BitaxePopoverViewController: NSViewController {
         coreVoltageLabel.textColor = .white
         coreVoltageLabel.translatesAutoresizingMaskIntoConstraints = false
         
+        // Sparkline Graph
+        sparklineView = createSparklineView()
+        
         // Dividers
         dividerAboveIP = NSView()
         dividerAboveIP.wantsLayer = true
@@ -271,6 +324,7 @@ class BitaxePopoverViewController: NSViewController {
     
     private func addElementsToContainer(_ containerView: NSView) {
         containerView.addSubview(titleLabel)
+        containerView.addSubview(sparklineView)
         containerView.addSubview(hashrateLabel)
         containerView.addSubview(asicTempLabel)
         containerView.addSubview(vrTempLabel)
@@ -296,8 +350,14 @@ class BitaxePopoverViewController: NSViewController {
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             
-            // Hashrate - single spacing below headline
-            hashrateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing),
+            // Sparkline - below title
+            sparklineView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing),
+            sparklineView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
+            sparklineView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            sparklineView.heightAnchor.constraint(equalToConstant: 25),
+            
+            // Hashrate - below sparkline
+            hashrateLabel.topAnchor.constraint(equalTo: sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing),
             hashrateLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             hashrateLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             
@@ -380,6 +440,7 @@ class BitaxePopoverViewController: NSViewController {
             versionLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
             versionLabel.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor)
         ])
+        
     }
     
     // MARK: - Button Container Setup
@@ -445,11 +506,26 @@ class BitaxePopoverViewController: NSViewController {
                 }
             }
             
+            // Show/hide sparkline based on state
+            let isConnected = state == .connected
+            self.sparklineView.isHidden = !isConnected
+            
+            // Ensure baseline is visible when sparkline is shown
+            if isConnected {
+                DispatchQueue.main.async {
+                    self.updateBaselinePath(for: self.sparklineView)
+                }
+            }
+            
             // Update hashrate
             if let hashrate = hashrate {
                 let hashrateTH = hashrate / 1000.0
                 self.hashrateLabel.stringValue = "Hashrate: \(String(format: "%.3f", hashrateTH)) TH/s"
                 self.hashrateLabel.textColor = .systemGreen
+                
+                // Update sparkline with new data
+                self.updateSparkline(with: hashrateTH)
+                
             } else {
                 self.hashrateLabel.stringValue = "Hashrate: -- TH/s"
                 self.hashrateLabel.textColor = .systemGray
@@ -582,6 +658,96 @@ class BitaxePopoverViewController: NSViewController {
         NSWorkspace.shared.open(url)
     }
     
+    // MARK: - Sparkline Methods
+    
+    private func updateBaselinePath(for view: NSView) {
+        guard let baselineLayer = view.layer?.sublayers?.first(where: { $0.name == "baseline" }) as? CAShapeLayer else { return }
+        
+        let width = view.bounds.width
+        let height = view.bounds.height
+        
+        guard width > 0 && height > 0 else { return }
+        
+        let baselinePath = CGMutablePath()
+        baselinePath.move(to: CGPoint(x: 0, y: height / 2)) // Center vertically
+        baselinePath.addLine(to: CGPoint(x: width, y: height / 2))
+        
+        baselineLayer.path = baselinePath
+    }
+    
+    private func updateSparkline(with hashrate: Double) {
+        // Add new data point
+        hashrateHistory.append(hashrate)
+        
+        // Keep only the last maxHistoryPoints
+        if hashrateHistory.count > maxHistoryPoints {
+            hashrateHistory.removeFirst()
+        }
+        
+        // Update the visual graph
+        updateSparklineVisual()
+    }
+    
+    private func updateSparklineVisual() {
+        let width = sparklineView.bounds.width
+        let height = sparklineView.bounds.height
+        
+        guard width > 0 && height > 0 else { return }
+        
+        // Update baseline path to full width
+        updateBaselinePath(for: sparklineView)
+        
+        guard !hashrateHistory.isEmpty else { return }
+        
+        // Remove old graph layers (keep baseline)
+        sparklineView.layer?.sublayers?.removeAll { $0.name != "baseline" }
+        
+        // Show baseline if we have no data or only one data point
+        if let baselineLayer = sparklineView.layer?.sublayers?.first(where: { $0.name == "baseline" }) {
+            baselineLayer.isHidden = hashrateHistory.count > 1
+        }
+        
+        // Create new graph layer
+        let graphLayer = createGraphLayer(data: hashrateHistory, width: width, height: height)
+        sparklineView.layer?.addSublayer(graphLayer)
+    }
+    
+    private func createGraphLayer(data: [Double], width: CGFloat, height: CGFloat) -> CALayer {
+        let layer = CAShapeLayer()
+        
+        // Find min/max for scaling
+        let minValue = data.min() ?? 0
+        let maxValue = data.max() ?? 1
+        let range = maxValue - minValue
+        
+        guard range > 0 else { return layer }
+        
+        // Create path
+        let path = CGMutablePath()
+        let pointWidth = width / CGFloat(data.count - 1)
+        
+        for (index, value) in data.enumerated() {
+            let x = CGFloat(index) * pointWidth
+            let normalizedValue = (value - minValue) / range
+            let y = height * (1.0 - normalizedValue) // Flip Y axis
+            
+            if index == 0 {
+                path.move(to: CGPoint(x: x, y: y))
+            } else {
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+        }
+        
+        layer.path = path
+        layer.strokeColor = NSColor.systemGreen.cgColor
+        layer.fillColor = NSColor.clear.cgColor
+        layer.lineWidth = 1.5
+        layer.lineCap = .round
+        layer.lineJoin = .round
+        
+        return layer
+    }
+    
     @objc func openGithub() {
         // Open GitHub repository
         let url = URL(string: AppConstants.githubBaseURL)!
@@ -639,6 +805,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var popoverViewController: BitaxePopoverViewController!
     
+    
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Load configuration
         config = AppConfig()
@@ -658,7 +825,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
             self.updateMinerData()
         }
         
-        // Initial update
+        // Pre-fetch data immediately on startup
         updateMinerData()
     }
     
@@ -680,6 +847,11 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         if popover.isShown {
             popover.performClose(nil)
         } else {
+            // Ensure view is loaded for immediate display
+            if let popoverVC = popoverViewController {
+                _ = popoverVC.view
+                
+            }
             if let button = statusItem.button {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             }
@@ -744,6 +916,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         state = .connected
                         let hashrateTH = hashrate / 1000.0
                         self?.showMenuBarState("⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | A \(String(format: "%.0f", asicTemp))°C | VR \(String(format: "%.0f", vrTemp))°C", color: .systemGreen)
+                        
                     } else {
                         // Any missing data triggers device issue state
                         state = .deviceIssue
@@ -821,6 +994,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         ]
         process.launch()
     }
+    
 }
 
 // Main application
