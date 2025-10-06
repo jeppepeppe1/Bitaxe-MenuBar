@@ -10,7 +10,7 @@ Monitor your BitAxe from the macOS menu bar with live stats, temperature alerts,
 - Real-time Data: Live hashrate, ASIC temperature, and VR temperature monitoring
 - Auto-refresh: Updates data every 5 seconds
 - Smart Temperature Alerts: Color-coded warnings when temperatures exceed safe thresholds
-- Homebrew Integration: Seamless installaiton and updates via Homebrew package manager
+- Homebrew Integration: Seamless installation and updates via Homebrew package manager
 - Dynamic Version Display: Displays the current version and notifies you when an update is available
 
 ### Safety Notifications
