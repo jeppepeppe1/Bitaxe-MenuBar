@@ -118,6 +118,10 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 - **BitAxe Documentation**: [https://osmu.wiki/bitaxe/api/](https://osmu.wiki/bitaxe/api/)
 - **ESP-Miner API**: [https://github.com/bitaxeorg/ESP-Miner](https://github.com/bitaxeorg/ESP-Miner)
 
+## ℹ️ Information
+
+- **Disclaimer** Developed by enthusiasts, this project is not an official Bitaxe product
+
 ## 🧑‍💻 Community
 
 - **Open Source Miners United**: https://discord.com/invite/osmu
