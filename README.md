@@ -73,9 +73,7 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ## 📋 Changelog
 
-### **v1.1.1** - Terminal Independence & UI Fixes
-- Fixed UI layering to eliminate button blinking on startup
-- Updated README with terminal-independent commands
+### **v1.1.1** - Terminal Independence
 - App now runs independently of terminal closure
 
 ### **v1.1.0** - Sparkline Graph
