@@ -592,49 +592,34 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Show/hide appropriate button container based on state
-            // Force immediate hiding of all containers first and wait for UI update
+            // Use immediate synchronous approach to prevent blinking
             self.hideAllButtonContainers()
             
-            // Use a more reliable approach to prevent button overlap
-            DispatchQueue.main.async {
-                // Double-check all containers are hidden before showing new one
-                self.hideAllButtonContainers()
-                
-                // Small delay to ensure hiding takes effect
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    switch state {
-                    case .notConfigured:
-                        self.notConfiguredButtonContainer.isHidden = false
-                    case .networkError:
-                        self.networkErrorButtonContainer.isHidden = false
-                    case .deviceIssue:
-                        self.deviceIssueButtonContainer.isHidden = false
-                    case .connected:
-                        // For now, always show single-button layout (no update available)
-                        self.connectedNoUpdateButtonContainer.isHidden = false
-                    }
-                    
-                    // Force immediate display update
-                    self.view.needsDisplay = true
-                }
+            // Show the correct container immediately without delay
+            switch state {
+            case .notConfigured:
+                self.notConfiguredButtonContainer.isHidden = false
+            case .networkError:
+                self.networkErrorButtonContainer.isHidden = false
+            case .deviceIssue:
+                self.deviceIssueButtonContainer.isHidden = false
+            case .connected:
+                // For now, always show single-button layout (no update available)
+                self.connectedNoUpdateButtonContainer.isHidden = false
             }
+            
+            // Force immediate display update
+            self.view.needsDisplay = true
         }
     }
     
     private func hideAllButtonContainers() {
         // Force immediate hiding of all button containers to prevent overlap
-        let containers = [
-            notConfiguredButtonContainer,
-            networkErrorButtonContainer,
-            deviceIssueButtonContainer,
-            connectedButtonContainer,
-            connectedNoUpdateButtonContainer
-        ]
-        
-        for container in containers {
-            container?.isHidden = true
-            container?.needsDisplay = true
-        }
+        notConfiguredButtonContainer?.isHidden = true
+        networkErrorButtonContainer?.isHidden = true
+        deviceIssueButtonContainer?.isHidden = true
+        connectedButtonContainer?.isHidden = true
+        connectedNoUpdateButtonContainer?.isHidden = true
         
         // Force immediate view update
         view.needsDisplay = true
