@@ -76,7 +76,7 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 ## 📋 Changelog
 
 **v1.1.1**
-- Improved Homebrew Commands
+- Improved Homebrew commands
 - App now runs independently of terminal closure
 
 **v1.1.0**
