@@ -27,8 +27,6 @@ enum AppState {
     case networkError
     case deviceIssue
     case connected
-    case connectedPartialData
-    case connectedMissingVRTemp
 }
 
 // MARK: - Button Configuration
@@ -442,7 +440,7 @@ class BitaxePopoverViewController: NSViewController {
                     self.titleLabel.stringValue = "Network Error"
                 case .deviceIssue:
                     self.titleLabel.stringValue = "Device Issue"
-                case .connected, .connectedPartialData, .connectedMissingVRTemp:
+                case .connected:
                     self.titleLabel.stringValue = "Unknown device"
                 }
             }
@@ -484,7 +482,7 @@ class BitaxePopoverViewController: NSViewController {
                 statusText = "Network Error"
             case .deviceIssue:
                 statusText = "Device Issue"
-            case .connected, .connectedPartialData, .connectedMissingVRTemp:
+            case .connected:
                 statusText = "Connected"
             }
             self.statusLabel.stringValue = "Status: \(statusText)"
@@ -518,21 +516,30 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Show/hide appropriate button container based on state
-            // Force immediate hiding of all containers first
+            // Force immediate hiding of all containers first and wait for UI update
             self.hideAllButtonContainers()
             
-            // Ensure UI updates are processed before showing new container
+            // Use a more reliable approach to prevent button overlap
             DispatchQueue.main.async {
-                switch state {
-                case .notConfigured:
-                    self.notConfiguredButtonContainer.isHidden = false
-                case .networkError:
-                    self.networkErrorButtonContainer.isHidden = false
-                case .deviceIssue:
-                    self.deviceIssueButtonContainer.isHidden = false
-                case .connected, .connectedPartialData, .connectedMissingVRTemp:
-                    // For now, always show single-button layout (no update available)
-                    self.connectedNoUpdateButtonContainer.isHidden = false
+                // Double-check all containers are hidden before showing new one
+                self.hideAllButtonContainers()
+                
+                // Small delay to ensure hiding takes effect
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                    switch state {
+                    case .notConfigured:
+                        self.notConfiguredButtonContainer.isHidden = false
+                    case .networkError:
+                        self.networkErrorButtonContainer.isHidden = false
+                    case .deviceIssue:
+                        self.deviceIssueButtonContainer.isHidden = false
+                    case .connected:
+                        // For now, always show single-button layout (no update available)
+                        self.connectedNoUpdateButtonContainer.isHidden = false
+                    }
+                    
+                    // Force immediate display update
+                    self.view.needsDisplay = true
                 }
             }
         }
@@ -540,18 +547,21 @@ class BitaxePopoverViewController: NSViewController {
     
     private func hideAllButtonContainers() {
         // Force immediate hiding of all button containers to prevent overlap
-        notConfiguredButtonContainer.isHidden = true
-        networkErrorButtonContainer.isHidden = true
-        deviceIssueButtonContainer.isHidden = true
-        connectedButtonContainer.isHidden = true
-        connectedNoUpdateButtonContainer.isHidden = true
+        let containers = [
+            notConfiguredButtonContainer,
+            networkErrorButtonContainer,
+            deviceIssueButtonContainer,
+            connectedButtonContainer,
+            connectedNoUpdateButtonContainer
+        ]
         
-        // Force immediate UI update to ensure hiding takes effect
-        notConfiguredButtonContainer.needsDisplay = true
-        networkErrorButtonContainer.needsDisplay = true
-        deviceIssueButtonContainer.needsDisplay = true
-        connectedButtonContainer.needsDisplay = true
-        connectedNoUpdateButtonContainer.needsDisplay = true
+        for container in containers {
+            container?.isHidden = true
+            container?.needsDisplay = true
+        }
+        
+        // Force immediate view update
+        view.needsDisplay = true
     }
     
     @objc func openWeb() {
@@ -734,13 +744,10 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
                         state = .connected
                         let hashrateTH = hashrate / 1000.0
                         self?.showMenuBarState("⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | A \(String(format: "%.0f", asicTemp))°C | VR \(String(format: "%.0f", vrTemp))°C", color: .systemGreen)
-                    } else if let hashrate = hashrate, let asicTemp = asicTemp {
-                        state = .connectedMissingVRTemp
-                        let hashrateTH = hashrate / 1000.0
-                        self?.showMenuBarState("⛏️ \(String(format: "%.3f", hashrateTH)) TH/s | A \(String(format: "%.0f", asicTemp))°C | VR --°C", color: .systemGreen)
                     } else {
-                        state = .connectedPartialData
-                        self?.showMenuBarState("⛏️ Connected | Partial Data", color: .systemYellow)
+                        // Any missing data triggers device issue state
+                        state = .deviceIssue
+                        self?.showMenuBarState("⛏️ Device Issue", color: .systemOrange)
                     }
                     
                     self?.popoverViewController?.updateData(
