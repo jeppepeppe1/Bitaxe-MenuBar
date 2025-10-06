@@ -32,19 +32,28 @@ Monitor your BitAxe from the macOS menu bar with live stats, temperature alerts,
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Complete installation with IP configuration
-brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && bitaxe-menubar &
+brew tap jeppepeppe1/bitaxe-menubar && brew install jeppepeppe1/bitaxe-menubar/bitaxe-menubar && bitaxe-config <YOUR_IP> && nohup bitaxe-menubar > /dev/null 2>&1 &
 ```
 
 #### **Update Existing Installation**
 ```bash
 # Update to latest version and restart
-brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && bitaxe-menubar &
+brew update && brew upgrade bitaxe-menubar && pkill -f bitaxe-menubar && nohup bitaxe-menubar > /dev/null 2>&1 &
 ```
 
 #### **Quick Restart (No Update)**
 ```bash
 # Just restart the app (useful after configuration changes)
-pkill -f bitaxe-menubar && bitaxe-menubar &
+pkill -f bitaxe-menubar && nohup bitaxe-menubar > /dev/null 2>&1 &
+```
+
+#### **Run App Independently (Recommended)**
+```bash
+# Start app that survives terminal closure
+nohup bitaxe-menubar > /dev/null 2>&1 &
+
+# Stop the app
+pkill -f bitaxe-menubar
 ```
 
 #### **Reconfigure IP Address**
@@ -53,7 +62,7 @@ pkill -f bitaxe-menubar && bitaxe-menubar &
 bitaxe-config <YOUR_IP> 
 
 # Restart
-bitaxe-menubar &
+nohup bitaxe-menubar > /dev/null 2>&1 &
 ```
 
 #### **Complete Uninstall**
@@ -63,6 +72,11 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 ```
 
 ## 📋 Changelog
+
+### **v1.1.1** - Terminal Independence & UI Fixes
+- Fixed UI layering to eliminate button blinking on startup
+- Updated README with terminal-independent commands
+- App now runs independently of terminal closure
 
 ### **v1.1.0** - Sparkline Graph
 - Added real-time hashrate sparkline graph

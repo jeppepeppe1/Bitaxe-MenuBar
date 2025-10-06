@@ -28,7 +28,7 @@ class SparklineContainerView: NSView {
 // MARK: - App Constants
 struct AppConstants {
     // Version Management
-    static let version = "1.1.0"
+    static let version = "1.1.1"
     
     // URLs
     static let githubBaseURL = "https://github.com/jeppepeppe1/BitAxe-MenuBar"
