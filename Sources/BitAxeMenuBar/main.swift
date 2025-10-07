@@ -170,6 +170,7 @@ class BitaxePopoverViewController: NSViewController {
     var versionLabel: NSTextField!
     var bottomContainerView: NSView!
     var bottomInfoContainer: NSView!
+    var informationContainer: NSView!
     
     // Configuration
     var config: AppConfig!
@@ -311,6 +312,10 @@ class BitaxePopoverViewController: NSViewController {
         versionLabel.textColor = .systemGray
         versionLabel.translatesAutoresizingMaskIntoConstraints = false
         
+        // Information Container View (for all data fields)
+        informationContainer = NSView()
+        informationContainer.translatesAutoresizingMaskIntoConstraints = false
+        
         // Bottom Container View
         bottomContainerView = NSView()
         bottomContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -323,17 +328,22 @@ class BitaxePopoverViewController: NSViewController {
     
     private func addElementsToContainer(_ containerView: NSView) {
         containerView.addSubview(titleLabel)
-        containerView.addSubview(sparklineView)
-        containerView.addSubview(hashrateLabel)
-        containerView.addSubview(asicTempLabel)
-        containerView.addSubview(vrTempLabel)
-        containerView.addSubview(statusLabel)
-        containerView.addSubview(dividerAboveFrequency)
-        containerView.addSubview(frequencyLabel)
-        containerView.addSubview(coreVoltageLabel)
-        containerView.addSubview(dividerAboveIP)
-        containerView.addSubview(ipLabel)
+        containerView.addSubview(informationContainer)
         containerView.addSubview(bottomContainerView)
+        
+        // Add all data fields to information container
+        informationContainer.addSubview(sparklineView)
+        informationContainer.addSubview(hashrateLabel)
+        informationContainer.addSubview(asicTempLabel)
+        informationContainer.addSubview(vrTempLabel)
+        informationContainer.addSubview(statusLabel)
+        informationContainer.addSubview(dividerAboveFrequency)
+        informationContainer.addSubview(frequencyLabel)
+        informationContainer.addSubview(coreVoltageLabel)
+        informationContainer.addSubview(dividerAboveIP)
+        informationContainer.addSubview(ipLabel)
+        
+        // Add button containers to bottom container
         bottomContainerView.addSubview(notConfiguredButtonContainer)
         bottomContainerView.addSubview(networkErrorButtonContainer)
         bottomContainerView.addSubview(deviceIssueButtonContainer)
@@ -349,60 +359,67 @@ class BitaxePopoverViewController: NSViewController {
             titleLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             titleLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             
-            // Sparkline - below title
-            sparklineView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing),
-            sparklineView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            sparklineView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            // Information Container - below title
+            informationContainer.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing),
+            informationContainer.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
+            informationContainer.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            
+            // Sparkline - at top of information container
+            sparklineView.topAnchor.constraint(equalTo: informationContainer.topAnchor),
+            sparklineView.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            sparklineView.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             sparklineView.heightAnchor.constraint(equalToConstant: 25),
             
             // Hashrate - below sparkline
             hashrateLabel.topAnchor.constraint(equalTo: sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing),
-            hashrateLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            hashrateLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            hashrateLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            hashrateLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
             // ASIC Temp - reduced spacing (6px)
             asicTempLabel.topAnchor.constraint(equalTo: hashrateLabel.bottomAnchor, constant: 6),
-            asicTempLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            asicTempLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            asicTempLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            asicTempLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
             // VR Temp - reduced spacing (6px)
             vrTempLabel.topAnchor.constraint(equalTo: asicTempLabel.bottomAnchor, constant: 6),
-            vrTempLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            vrTempLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            vrTempLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            vrTempLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
             // Divider above Frequency
             dividerAboveFrequency.topAnchor.constraint(equalTo: vrTempLabel.bottomAnchor, constant: 11),
-            dividerAboveFrequency.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            dividerAboveFrequency.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            dividerAboveFrequency.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            dividerAboveFrequency.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             dividerAboveFrequency.heightAnchor.constraint(equalToConstant: 1),
             
             // Frequency - spacing below divider
             frequencyLabel.topAnchor.constraint(equalTo: dividerAboveFrequency.bottomAnchor, constant: 11),
-            frequencyLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            frequencyLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            frequencyLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            frequencyLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
             // Core Voltage - reduced spacing (6px)
             coreVoltageLabel.topAnchor.constraint(equalTo: frequencyLabel.bottomAnchor, constant: 6),
-            coreVoltageLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            coreVoltageLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            coreVoltageLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            coreVoltageLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
             // Divider above Status
             dividerAboveIP.topAnchor.constraint(equalTo: coreVoltageLabel.bottomAnchor, constant: 11),
-            dividerAboveIP.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            dividerAboveIP.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            dividerAboveIP.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            dividerAboveIP.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             dividerAboveIP.heightAnchor.constraint(equalToConstant: 1),
             
             // Status - above IP Address
             statusLabel.topAnchor.constraint(equalTo: dividerAboveIP.bottomAnchor, constant: 11),
-            statusLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            statusLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            statusLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            statusLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             
-            // IP Address - at bottom of information
+            // IP Address - at bottom of information container
             ipLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 6),
-            ipLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
-            ipLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
+            ipLabel.leadingAnchor.constraint(equalTo: informationContainer.leadingAnchor),
+            ipLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
+            ipLabel.bottomAnchor.constraint(equalTo: informationContainer.bottomAnchor),
             
-            // Bottom Container - positioned dynamically based on state
+            // Bottom Container - positioned below information container
+            bottomContainerView.topAnchor.constraint(equalTo: informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing),
             bottomContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             bottomContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             bottomContainerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -PopoverLayout.verticalPadding),
@@ -488,7 +505,7 @@ class BitaxePopoverViewController: NSViewController {
     
     func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, state: AppState, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
         DispatchQueue.main.async {
-            // Use actual data passed to the method
+            // Use actual data passed to the function
             let actualState = state
             let actualHashrate = hashrate
             let actualAsicTemp = asicTemp
@@ -519,25 +536,19 @@ class BitaxePopoverViewController: NSViewController {
             let isConnected = actualState == .connected
             self.sparklineView.isHidden = !isConnected
             
-            // Hide all data fields for update state
+            // Hide/show information container for update state
             let isUpdateState = actualState == .update
-            self.hashrateLabel.isHidden = isUpdateState
-            self.asicTempLabel.isHidden = isUpdateState
-            self.vrTempLabel.isHidden = isUpdateState
-            self.statusLabel.isHidden = isUpdateState
-            self.ipLabel.isHidden = isUpdateState
-            self.frequencyLabel.isHidden = isUpdateState
-            self.coreVoltageLabel.isHidden = isUpdateState
-            self.dividerAboveFrequency.isHidden = isUpdateState
-            self.dividerAboveIP.isHidden = isUpdateState
+            self.informationContainer.isHidden = isUpdateState
             
-            // Adjust bottom container position for update state
+            // Adjust bottom container position based on information container visibility
             if isUpdateState {
                 // For update state, position bottom container directly below title
                 self.bottomContainerView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+                self.bottomContainerView.topAnchor.constraint(equalTo: self.informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
             } else {
-                // For other states, position below IP address (normal behavior)
-                self.bottomContainerView.topAnchor.constraint(equalTo: self.ipLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+                // For other states, position below information container (normal behavior)
+                self.bottomContainerView.topAnchor.constraint(equalTo: self.informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+                self.bottomContainerView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
             }
             
             // Adjust hashrate label position based on sparkline visibility
