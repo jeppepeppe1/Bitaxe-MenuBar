@@ -172,6 +172,12 @@ class BitaxePopoverViewController: NSViewController {
     var bottomInfoContainer: NSView!
     var informationContainer: NSView!
     
+    // Dynamic constraint references
+    var bottomContainerToTitleConstraint: NSLayoutConstraint!
+    var bottomContainerToInfoConstraint: NSLayoutConstraint!
+    var hashrateToSparklineConstraint: NSLayoutConstraint!
+    var hashrateToTitleConstraint: NSLayoutConstraint!
+    
     // Configuration
     var config: AppConfig!
     
@@ -418,8 +424,7 @@ class BitaxePopoverViewController: NSViewController {
             ipLabel.trailingAnchor.constraint(equalTo: informationContainer.trailingAnchor),
             ipLabel.bottomAnchor.constraint(equalTo: informationContainer.bottomAnchor),
             
-            // Bottom Container - positioned below information container
-            bottomContainerView.topAnchor.constraint(equalTo: informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing),
+            // Bottom Container - positioned below information container (default)
             bottomContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             bottomContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             bottomContainerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -PopoverLayout.verticalPadding),
@@ -455,6 +460,16 @@ class BitaxePopoverViewController: NSViewController {
             versionLabel.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
             versionLabel.bottomAnchor.constraint(equalTo: bottomContainerView.bottomAnchor)
         ])
+        
+        // Create dynamic constraint references
+        bottomContainerToTitleConstraint = bottomContainerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing)
+        bottomContainerToInfoConstraint = bottomContainerView.topAnchor.constraint(equalTo: informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing)
+        hashrateToSparklineConstraint = hashrateLabel.topAnchor.constraint(equalTo: sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing)
+        hashrateToTitleConstraint = hashrateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing)
+        
+        // Set initial constraints (normal state)
+        bottomContainerToInfoConstraint.isActive = true
+        hashrateToSparklineConstraint.isActive = true
         
     }
     
@@ -543,26 +558,26 @@ class BitaxePopoverViewController: NSViewController {
             // Adjust bottom container position based on information container visibility
             if isUpdateState {
                 // For update state, position bottom container directly below title
-                self.bottomContainerView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
-                self.bottomContainerView.topAnchor.constraint(equalTo: self.informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
+                self.bottomContainerToTitleConstraint.isActive = true
+                self.bottomContainerToInfoConstraint.isActive = false
             } else {
                 // For other states, position below information container (normal behavior)
-                self.bottomContainerView.topAnchor.constraint(equalTo: self.informationContainer.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
-                self.bottomContainerView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
+                self.bottomContainerToInfoConstraint.isActive = true
+                self.bottomContainerToTitleConstraint.isActive = false
             }
             
             // Adjust hashrate label position based on sparkline visibility
             if isConnected {
                 // Sparkline visible - hashrate below sparkline
-                self.hashrateLabel.topAnchor.constraint(equalTo: self.sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
-                self.hashrateLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
+                self.hashrateToSparklineConstraint.isActive = true
+                self.hashrateToTitleConstraint.isActive = false
                 
                 // Ensure baseline is visible when sparkline is shown
                 self.updateBaselinePath(for: self.sparklineView)
             } else {
                 // Sparkline hidden - hashrate directly below title
-                self.hashrateLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
-                self.hashrateLabel.topAnchor.constraint(equalTo: self.sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
+                self.hashrateToTitleConstraint.isActive = true
+                self.hashrateToSparklineConstraint.isActive = false
             }
             
             // Update hashrate with caching
