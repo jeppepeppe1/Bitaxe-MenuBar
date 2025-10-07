@@ -41,7 +41,7 @@ struct AppConstants {
     
     // API Configuration
     static let apiEndpoint = "/api/system/info"
-    static let updateInterval: TimeInterval = 3.0
+    static let updateInterval: TimeInterval = 5.0
     static let notificationCooldown: TimeInterval = 300.0 // 5 minutes
 }
 
