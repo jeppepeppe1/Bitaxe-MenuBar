@@ -28,7 +28,7 @@ class SparklineContainerView: NSView {
 // MARK: - App Constants
 struct AppConstants {
     // Version Management
-    static let version = "1.1.1"
+    static let version = "1.1.2"
     
     // URLs
     static let githubBaseURL = "https://github.com/jeppepeppe1/BitAxe-MenuBar"
@@ -186,6 +186,18 @@ class BitaxePopoverViewController: NSViewController {
     
     // Configuration
     var config: AppConfig!
+    
+    // Performance optimization: String caching
+    private var lastHashrate: Double?
+    private var cachedHashrateString: String?
+    private var lastAsicTemp: Double?
+    private var cachedAsicTempString: String?
+    private var lastVrTemp: Double?
+    private var cachedVrTempString: String?
+    private var lastFrequency: Double?
+    private var cachedFrequencyString: String?
+    private var lastCoreVoltage: Double?
+    private var cachedCoreVoltageString: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -510,17 +522,29 @@ class BitaxePopoverViewController: NSViewController {
             let isConnected = state == .connected
             self.sparklineView.isHidden = !isConnected
             
-            // Ensure baseline is visible when sparkline is shown
+            // Adjust hashrate label position based on sparkline visibility
             if isConnected {
-                DispatchQueue.main.async {
-                    self.updateBaselinePath(for: self.sparklineView)
-                }
+                // Sparkline visible - hashrate below sparkline
+                self.hashrateLabel.topAnchor.constraint(equalTo: self.sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+                self.hashrateLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
+                
+                // Ensure baseline is visible when sparkline is shown
+                self.updateBaselinePath(for: self.sparklineView)
+            } else {
+                // Sparkline hidden - hashrate directly below title
+                self.hashrateLabel.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+                self.hashrateLabel.topAnchor.constraint(equalTo: self.sparklineView.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = false
             }
             
-            // Update hashrate
+            // Update hashrate with caching
             if let hashrate = hashrate {
                 let hashrateTH = hashrate / 1000.0
-                self.hashrateLabel.stringValue = "Hashrate: \(String(format: "%.3f", hashrateTH)) TH/s"
+                // Use cached string formatting for better performance
+                if self.lastHashrate != hashrateTH {
+                    self.cachedHashrateString = "Hashrate: \(String(format: "%.3f", hashrateTH)) TH/s"
+                    self.lastHashrate = hashrateTH
+                }
+                self.hashrateLabel.stringValue = self.cachedHashrateString ?? "Hashrate: -- TH/s"
                 self.hashrateLabel.textColor = .systemGreen
                 
                 // Update sparkline with new data
@@ -531,18 +555,26 @@ class BitaxePopoverViewController: NSViewController {
                 self.hashrateLabel.textColor = .systemGray
             }
             
-            // Update ASIC temperature
+            // Update ASIC temperature with caching
             if let asicTemp = asicTemp {
-                self.asicTempLabel.stringValue = "ASIC Temp: \(String(format: "%.0f", asicTemp))°C"
+                if self.lastAsicTemp != asicTemp {
+                    self.cachedAsicTempString = "ASIC Temp: \(String(format: "%.0f", asicTemp))°C"
+                    self.lastAsicTemp = asicTemp
+                }
+                self.asicTempLabel.stringValue = self.cachedAsicTempString ?? "ASIC Temp: --°C"
                 self.asicTempLabel.textColor = asicTemp > AppConstants.asicTempThreshold ? .systemRed : .systemGreen
             } else {
                 self.asicTempLabel.stringValue = "ASIC Temp: --°C"
                 self.asicTempLabel.textColor = .systemGray
             }
             
-            // Update VR temperature
+            // Update VR temperature with caching
             if let vrTemp = vrTemp {
-                self.vrTempLabel.stringValue = "VR Temp: \(String(format: "%.0f", vrTemp))°C"
+                if self.lastVrTemp != vrTemp {
+                    self.cachedVrTempString = "VR Temp: \(String(format: "%.0f", vrTemp))°C"
+                    self.lastVrTemp = vrTemp
+                }
+                self.vrTempLabel.stringValue = self.cachedVrTempString ?? "VR Temp: --°C"
                 self.vrTempLabel.textColor = vrTemp > AppConstants.vrTempThreshold ? .systemRed : .systemGreen
             } else {
                 self.vrTempLabel.stringValue = "VR Temp: --°C"
@@ -573,18 +605,26 @@ class BitaxePopoverViewController: NSViewController {
                 self.ipLabel.textColor = .white
             }
             
-            // Update frequency
+            // Update frequency with caching
             if let frequency = frequency {
-                self.frequencyLabel.stringValue = "Frequency: \(String(format: "%.0f", frequency)) MHz"
+                if self.lastFrequency != frequency {
+                    self.cachedFrequencyString = "Frequency: \(String(format: "%.0f", frequency)) MHz"
+                    self.lastFrequency = frequency
+                }
+                self.frequencyLabel.stringValue = self.cachedFrequencyString ?? "Frequency: -- MHz"
                 self.frequencyLabel.textColor = .systemGreen
             } else {
                 self.frequencyLabel.stringValue = "Frequency: -- MHz"
                 self.frequencyLabel.textColor = .systemGray
             }
             
-            // Update core voltage
+            // Update core voltage with caching
             if let coreVoltage = coreVoltage {
-                self.coreVoltageLabel.stringValue = "Core Voltage: \(String(format: "%.0f", coreVoltage)) mV"
+                if self.lastCoreVoltage != coreVoltage {
+                    self.cachedCoreVoltageString = "Core Voltage: \(String(format: "%.0f", coreVoltage)) mV"
+                    self.lastCoreVoltage = coreVoltage
+                }
+                self.coreVoltageLabel.stringValue = self.cachedCoreVoltageString ?? "Core Voltage: -- mV"
                 self.coreVoltageLabel.textColor = .systemGreen
             } else {
                 self.coreVoltageLabel.stringValue = "Core Voltage: -- mV"
@@ -684,28 +724,30 @@ class BitaxePopoverViewController: NSViewController {
         
         guard !hashrateHistory.isEmpty else { return }
         
-        // Remove old graph layers (keep baseline)
-        sparklineView.layer?.sublayers?.removeAll { $0.name != "baseline" }
-        
         // Show baseline if we have no data or only one data point
         if let baselineLayer = sparklineView.layer?.sublayers?.first(where: { $0.name == "baseline" }) {
             baselineLayer.isHidden = hashrateHistory.count > 1
         }
         
-        // Create new graph layer
-        let graphLayer = createGraphLayer(data: hashrateHistory, width: width, height: height)
-        sparklineView.layer?.addSublayer(graphLayer)
+        // Reuse existing graph layer or create new one for better performance
+        if let existingGraphLayer = sparklineView.layer?.sublayers?.first(where: { $0.name == "graph" }) as? CAShapeLayer {
+            // Reuse existing layer - just update the path
+            let newPath = createGraphPath(data: hashrateHistory, width: width, height: height)
+            existingGraphLayer.path = newPath
+        } else {
+            // Create new graph layer only if it doesn't exist
+            let graphLayer = createGraphLayer(data: hashrateHistory, width: width, height: height)
+            sparklineView.layer?.addSublayer(graphLayer)
+        }
     }
     
-    private func createGraphLayer(data: [Double], width: CGFloat, height: CGFloat) -> CALayer {
-        let layer = CAShapeLayer()
-        
+    private func createGraphPath(data: [Double], width: CGFloat, height: CGFloat) -> CGPath {
         // Find min/max for scaling
         let minValue = data.min() ?? 0
         let maxValue = data.max() ?? 1
         let range = maxValue - minValue
         
-        guard range > 0 else { return layer }
+        guard range > 0 else { return CGMutablePath() }
         
         // Create path
         let path = CGMutablePath()
@@ -723,7 +765,15 @@ class BitaxePopoverViewController: NSViewController {
             }
         }
         
-        layer.path = path
+        return path
+    }
+    
+    private func createGraphLayer(data: [Double], width: CGFloat, height: CGFloat) -> CALayer {
+        let layer = CAShapeLayer()
+        layer.name = "graph"
+        
+        // Use the shared path creation method
+        layer.path = createGraphPath(data: data, width: width, height: height)
         layer.strokeColor = NSColor.systemGreen.cgColor
         layer.fillColor = NSColor.clear.cgColor
         layer.lineWidth = 1.5
@@ -790,6 +840,10 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     var popover: NSPopover!
     var popoverViewController: BitaxePopoverViewController!
     
+    // Performance optimization: App state tracking
+    private var isAppActive = true
+    private var currentState: AppState = .notConfigured
+    
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Load configuration
@@ -805,13 +859,62 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.action = #selector(togglePopover)
         statusItem.button?.target = self
         
+        // Setup app state observers for smart timer management
+        setupAppStateObservers()
+        
         // Start timer for periodic updates
-        timer = Timer.scheduledTimer(withTimeInterval: AppConstants.updateInterval, repeats: true) { _ in
-            self.updateMinerData()
-        }
+        startUpdateTimer()
         
         // Pre-fetch data immediately on startup
         updateMinerData()
+    }
+    
+    private func setupAppStateObservers() {
+        // Listen for app becoming active/inactive
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidBecomeActive),
+            name: NSApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidResignActive),
+            name: NSApplication.didResignActiveNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func appDidBecomeActive() {
+        isAppActive = true
+        // Restart timer with normal interval when app becomes active
+        startUpdateTimer()
+    }
+    
+    @objc private func appDidResignActive() {
+        isAppActive = false
+        // Restart timer with slower interval when app goes to background
+        startUpdateTimer()
+    }
+    
+    private func startUpdateTimer() {
+        // Invalidate existing timer
+        timer?.invalidate()
+        
+        // Choose interval based on app state
+        let interval: TimeInterval = isAppActive ? AppConstants.updateInterval : AppConstants.updateInterval * 2.0
+        
+        // Start new timer with appropriate interval
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+            self.updateMinerData()
+        }
+    }
+    
+    deinit {
+        // Clean up observers and timer
+        timer?.invalidate()
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setupPopover() {
@@ -849,6 +952,7 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
             popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .notConfigured, ip: nil, model: nil, frequency: nil, coreVoltage: nil)
             return
         }
+        
         
         let url = URL(string: apiURL)!
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in

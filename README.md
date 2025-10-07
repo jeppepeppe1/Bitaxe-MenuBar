@@ -75,9 +75,16 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ## 📋 Changelog
 
+**v1.1.2**
+- API and caching optimizations for better performance
+- Smart background/foreground awareness
+
 **v1.1.1**
 - Improved Homebrew commands
 - App now runs independently of terminal closure
+- API and caching optimizations for better performance
+- Smart background/foreground awareness
+- Improved UI responsiveness and efficiency
 
 **v1.1.0**
 - Added real-time hashrate sparkline graph
