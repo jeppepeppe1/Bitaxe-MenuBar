@@ -28,12 +28,13 @@ class SparklineContainerView: NSView {
 // MARK: - App Constants
 struct AppConstants {
     // Version Management
-    static let version = "1.1.2"
+    static let version = "1.2.0"
     
     // URLs
     static let githubBaseURL = "https://github.com/jeppepeppe1/BitAxe-MenuBar"
     static let githubReleasesURL = "\(githubBaseURL)/releases"
     static let githubTroubleshootingURL = "\(githubBaseURL)#troubleshooting"
+    
     
     // Temperature Thresholds
     static let asicTempThreshold: Double = 65.0
@@ -51,7 +52,9 @@ enum AppState {
     case networkError
     case deviceIssue
     case connected
+    case update
 }
+
 
 
 // MARK: - Button Configuration
@@ -59,7 +62,6 @@ struct ButtonConfig {
     let title: String
     let action: Selector
     let color: NSColor
-    let isUpdateButton: Bool
 }
 
 // MARK: - Button Container Factory
@@ -111,11 +113,7 @@ class ButtonContainerFactory {
         let button = NSButton(title: config.title, target: target, action: config.action)
         button.translatesAutoresizingMaskIntoConstraints = false
         
-        if config.isUpdateButton {
-            styleUpdateButton(button)
-        } else {
-            styleButton(button, color: config.color)
-        }
+        styleButton(button, color: config.color)
         
         return button
     }
@@ -130,17 +128,6 @@ class ButtonContainerFactory {
         button.focusRingType = .none
     }
     
-    private static func styleUpdateButton(_ button: NSButton) {
-        button.wantsLayer = true
-        button.layer?.backgroundColor = NSColor.clear.cgColor
-        button.layer?.cornerRadius = 6
-        button.layer?.borderWidth = 1
-        button.layer?.borderColor = NSColor.systemGray.cgColor
-        button.font = NSFont.systemFont(ofSize: 11, weight: .medium)
-        button.contentTintColor = .systemGray
-        button.isBordered = false
-        button.focusRingType = .none
-    }
 }
 
 // MARK: - Layout Configuration
@@ -179,7 +166,7 @@ class BitaxePopoverViewController: NSViewController {
     var networkErrorButtonContainer: NSView!
     var deviceIssueButtonContainer: NSView!
     var connectedButtonContainer: NSView!
-    var connectedNoUpdateButtonContainer: NSView!
+    var updateButtonContainer: NSView!
     var versionLabel: NSTextField!
     var bottomContainerView: NSView!
     var bottomInfoContainer: NSView!
@@ -316,7 +303,7 @@ class BitaxePopoverViewController: NSViewController {
         networkErrorButtonContainer.isHidden = true
         deviceIssueButtonContainer.isHidden = true
         connectedButtonContainer.isHidden = true
-        connectedNoUpdateButtonContainer.isHidden = true
+        updateButtonContainer.isHidden = true
         
         // Version Label
         versionLabel = NSTextField(labelWithString: "Bitaxe MenuBar - \(getAppVersion())")
@@ -351,7 +338,7 @@ class BitaxePopoverViewController: NSViewController {
         bottomContainerView.addSubview(networkErrorButtonContainer)
         bottomContainerView.addSubview(deviceIssueButtonContainer)
         bottomContainerView.addSubview(connectedButtonContainer)
-        bottomContainerView.addSubview(connectedNoUpdateButtonContainer)
+        bottomContainerView.addSubview(updateButtonContainer)
         bottomContainerView.addSubview(versionLabel)
     }
     
@@ -415,8 +402,7 @@ class BitaxePopoverViewController: NSViewController {
             ipLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             ipLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             
-            // Bottom Container - positioned below IP address with same spacing as below headline
-            bottomContainerView.topAnchor.constraint(equalTo: ipLabel.bottomAnchor, constant: PopoverLayout.rowSpacing),
+            // Bottom Container - positioned dynamically based on state
             bottomContainerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: PopoverLayout.horizontalPadding),
             bottomContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -PopoverLayout.horizontalPadding),
             bottomContainerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -PopoverLayout.verticalPadding),
@@ -442,10 +428,10 @@ class BitaxePopoverViewController: NSViewController {
             connectedButtonContainer.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
             connectedButtonContainer.heightAnchor.constraint(equalToConstant: 32),
             
-            connectedNoUpdateButtonContainer.topAnchor.constraint(equalTo: bottomContainerView.topAnchor),
-            connectedNoUpdateButtonContainer.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
-            connectedNoUpdateButtonContainer.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
-            connectedNoUpdateButtonContainer.heightAnchor.constraint(equalToConstant: 32),
+            updateButtonContainer.topAnchor.constraint(equalTo: bottomContainerView.topAnchor),
+            updateButtonContainer.leadingAnchor.constraint(equalTo: bottomContainerView.leadingAnchor),
+            updateButtonContainer.trailingAnchor.constraint(equalTo: bottomContainerView.trailingAnchor),
+            updateButtonContainer.heightAnchor.constraint(equalToConstant: 32),
             
             // Version Label - positioned directly below button containers with reduced spacing (75% of rowSpacing), left aligned
             versionLabel.topAnchor.constraint(equalTo: notConfiguredButtonContainer.bottomAnchor, constant: PopoverLayout.rowSpacing * 0.75),
@@ -460,35 +446,35 @@ class BitaxePopoverViewController: NSViewController {
     private func setupButtonContainers() {
         // Not Configured Button Container
         let notConfiguredButtons = [
-            ButtonConfig(title: "Configure IP", action: #selector(configureIP), color: .systemOrange, isUpdateButton: false)
+            ButtonConfig(title: "Configure IP", action: #selector(configureIP), color: .systemOrange)
         ]
         notConfiguredButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: notConfiguredButtons, target: self)
         
         // Network Error Button Container
         let networkErrorButtons = [
-            ButtonConfig(title: "View Troubleshooting", action: #selector(viewTroubleshooting), color: .systemRed, isUpdateButton: false)
+            ButtonConfig(title: "View Troubleshooting", action: #selector(viewTroubleshooting), color: .systemRed)
         ]
         networkErrorButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: networkErrorButtons, target: self)
         
         // Device Issue Button Container (two buttons side by side)
         let deviceIssueButtons = [
-            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemOrange, isUpdateButton: false),
-            ButtonConfig(title: "Open Github", action: #selector(openGithub), color: .systemOrange, isUpdateButton: false)
+            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemOrange),
+            ButtonConfig(title: "Open Github", action: #selector(openGithub), color: .systemOrange)
         ]
         deviceIssueButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: deviceIssueButtons, target: self)
         
-        // Connected Button Container (two buttons side by side)
+        // Connected Button Container (single button)
         let connectedButtons = [
-            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemGray, isUpdateButton: false),
-            ButtonConfig(title: "Update App", action: #selector(openGithub), color: .systemGray, isUpdateButton: true)
+            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemGray)
         ]
         connectedButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: connectedButtons, target: self)
         
-        // Connected No Update Button Container (single button)
-        let connectedNoUpdateButtons = [
-            ButtonConfig(title: "Open AxeOS", action: #selector(openWeb), color: .systemGray, isUpdateButton: false)
+        // Update Button Container (single button)
+        let updateButtons = [
+            ButtonConfig(title: "Open Github", action: #selector(openGithubReleases), color: .systemBlue)
         ]
-        connectedNoUpdateButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: connectedNoUpdateButtons, target: self)
+        updateButtonContainer = ButtonContainerFactory.createButtonContainer(buttons: updateButtons, target: self)
+        
     }
     
     
@@ -502,11 +488,20 @@ class BitaxePopoverViewController: NSViewController {
     
     func updateData(hashrate: Double?, asicTemp: Double?, vrTemp: Double?, state: AppState, ip: String?, model: String?, frequency: Double?, coreVoltage: Double?) {
         DispatchQueue.main.async {
+            // Use actual data passed to the method
+            let actualState = state
+            let actualHashrate = hashrate
+            let actualAsicTemp = asicTemp
+            let actualVrTemp = vrTemp
+            let actualIP = ip
+            let actualModel = model
+            let actualFrequency = frequency
+            let actualCoreVoltage = coreVoltage
             // Update title with model information or configuration state
-            if let model = model, !model.isEmpty {
+            if let model = actualModel, !model.isEmpty {
                 self.titleLabel.stringValue = "Bitaxe \(model)"
             } else {
-                switch state {
+                switch actualState {
                 case .notConfigured:
                     self.titleLabel.stringValue = "Configure IP"
                 case .networkError:
@@ -515,12 +510,35 @@ class BitaxePopoverViewController: NSViewController {
                     self.titleLabel.stringValue = "Device Issue"
                 case .connected:
                     self.titleLabel.stringValue = "Unknown device"
+                case .update:
+                    self.titleLabel.stringValue = "Update Available"
                 }
             }
             
             // Show/hide sparkline based on state
-            let isConnected = state == .connected
+            let isConnected = actualState == .connected
             self.sparklineView.isHidden = !isConnected
+            
+            // Hide all data fields for update state
+            let isUpdateState = actualState == .update
+            self.hashrateLabel.isHidden = isUpdateState
+            self.asicTempLabel.isHidden = isUpdateState
+            self.vrTempLabel.isHidden = isUpdateState
+            self.statusLabel.isHidden = isUpdateState
+            self.ipLabel.isHidden = isUpdateState
+            self.frequencyLabel.isHidden = isUpdateState
+            self.coreVoltageLabel.isHidden = isUpdateState
+            self.dividerAboveFrequency.isHidden = isUpdateState
+            self.dividerAboveIP.isHidden = isUpdateState
+            
+            // Adjust bottom container position for update state
+            if isUpdateState {
+                // For update state, position bottom container directly below title
+                self.bottomContainerView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+            } else {
+                // For other states, position below IP address (normal behavior)
+                self.bottomContainerView.topAnchor.constraint(equalTo: self.ipLabel.bottomAnchor, constant: PopoverLayout.rowSpacing).isActive = true
+            }
             
             // Adjust hashrate label position based on sparkline visibility
             if isConnected {
@@ -537,7 +555,7 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Update hashrate with caching
-            if let hashrate = hashrate {
+            if let hashrate = actualHashrate {
                 let hashrateTH = hashrate / 1000.0
                 // Use cached string formatting for better performance
                 if self.lastHashrate != hashrateTH {
@@ -556,7 +574,7 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Update ASIC temperature with caching
-            if let asicTemp = asicTemp {
+            if let asicTemp = actualAsicTemp {
                 if self.lastAsicTemp != asicTemp {
                     self.cachedAsicTempString = "ASIC Temp: \(String(format: "%.0f", asicTemp))°C"
                     self.lastAsicTemp = asicTemp
@@ -569,7 +587,7 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Update VR temperature with caching
-            if let vrTemp = vrTemp {
+            if let vrTemp = actualVrTemp {
                 if self.lastVrTemp != vrTemp {
                     self.cachedVrTempString = "VR Temp: \(String(format: "%.0f", vrTemp))°C"
                     self.lastVrTemp = vrTemp
@@ -583,7 +601,7 @@ class BitaxePopoverViewController: NSViewController {
             
             // Update status
             let statusText: String
-            switch state {
+            switch actualState {
             case .notConfigured:
                 statusText = "Not Connected"
             case .networkError:
@@ -592,12 +610,14 @@ class BitaxePopoverViewController: NSViewController {
                 statusText = "Device Issue"
             case .connected:
                 statusText = "Connected"
+            case .update:
+                statusText = "Update Available"
             }
             self.statusLabel.stringValue = "Status: \(statusText)"
             self.statusLabel.textColor = .white
             
             // Update IP address
-            if let ip = ip {
+            if let ip = actualIP {
                 self.ipLabel.stringValue = "IP Address: \(ip)"
                 self.ipLabel.textColor = .white
             } else {
@@ -606,12 +626,13 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Update frequency with caching
-            if let frequency = frequency {
+            if let frequency = actualFrequency {
                 if self.lastFrequency != frequency {
                     self.cachedFrequencyString = "Frequency: \(String(format: "%.0f", frequency)) MHz"
                     self.lastFrequency = frequency
                 }
                 self.frequencyLabel.stringValue = self.cachedFrequencyString ?? "Frequency: -- MHz"
+                // Green for any available data (connected or device issue with partial data)
                 self.frequencyLabel.textColor = .systemGreen
             } else {
                 self.frequencyLabel.stringValue = "Frequency: -- MHz"
@@ -619,12 +640,13 @@ class BitaxePopoverViewController: NSViewController {
             }
             
             // Update core voltage with caching
-            if let coreVoltage = coreVoltage {
+            if let coreVoltage = actualCoreVoltage {
                 if self.lastCoreVoltage != coreVoltage {
                     self.cachedCoreVoltageString = "Core Voltage: \(String(format: "%.0f", coreVoltage)) mV"
                     self.lastCoreVoltage = coreVoltage
                 }
                 self.coreVoltageLabel.stringValue = self.cachedCoreVoltageString ?? "Core Voltage: -- mV"
+                // Green for any available data (connected or device issue with partial data)
                 self.coreVoltageLabel.textColor = .systemGreen
             } else {
                 self.coreVoltageLabel.stringValue = "Core Voltage: -- mV"
@@ -633,10 +655,11 @@ class BitaxePopoverViewController: NSViewController {
             
             // Show/hide appropriate button container based on state
             // Use immediate synchronous approach to prevent blinking
+            // Hide all containers first to prevent overlap
             self.hideAllButtonContainers()
             
             // Show the correct container immediately without delay
-            switch state {
+            switch actualState {
             case .notConfigured:
                 self.notConfiguredButtonContainer.isHidden = false
             case .networkError:
@@ -644,8 +667,11 @@ class BitaxePopoverViewController: NSViewController {
             case .deviceIssue:
                 self.deviceIssueButtonContainer.isHidden = false
             case .connected:
-                // For now, always show single-button layout (no update available)
-                self.connectedNoUpdateButtonContainer.isHidden = false
+                // Show connected state with single button
+                self.connectedButtonContainer.isHidden = false
+            case .update:
+                // Show update state with single button
+                self.updateButtonContainer.isHidden = false
             }
             
             // Force immediate display update
@@ -659,7 +685,7 @@ class BitaxePopoverViewController: NSViewController {
         networkErrorButtonContainer?.isHidden = true
         deviceIssueButtonContainer?.isHidden = true
         connectedButtonContainer?.isHidden = true
-        connectedNoUpdateButtonContainer?.isHidden = true
+        updateButtonContainer?.isHidden = true
         
         // Force immediate view update
         view.needsDisplay = true
@@ -790,10 +816,14 @@ class BitaxePopoverViewController: NSViewController {
     }
     
     @objc func openGithubReleases() {
-        // Open GitHub releases page
-        let url = URL(string: AppConstants.githubReleasesURL)!
+        // Open GitHub main repository page
+        let url = URL(string: AppConstants.githubBaseURL)!
         NSWorkspace.shared.open(url)
     }
+    
+    
+    
+    
     
     
     
@@ -835,7 +865,10 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
     
     var statusItem: NSStatusItem!
     var timer: Timer?
+    var updateCheckTimer: Timer?
     var lastNotificationTime: Date?
+    var appLaunchTime: Date = Date()
+    var hasUpdateAvailable: Bool = false
     var config: AppConfig!
     var popover: NSPopover!
     var popoverViewController: BitaxePopoverViewController!
@@ -864,6 +897,9 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         
         // Start timer for periodic updates
         startUpdateTimer()
+        
+        // Start periodic update checking for long-running sessions
+        startPeriodicUpdateCheck()
         
         // Pre-fetch data immediately on startup
         updateMinerData()
@@ -911,9 +947,29 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    private func startPeriodicUpdateCheck() {
+        // Invalidate existing update check timer
+        updateCheckTimer?.invalidate()
+        
+        // Check for updates every 4 hours (14400 seconds)
+        // This ensures long-running sessions get update notifications
+        updateCheckTimer = Timer.scheduledTimer(withTimeInterval: 4 * 60 * 60, repeats: true) { [weak self] _ in
+            self?.checkForHomebrewUpdates { hasUpdate in
+                DispatchQueue.main.async {
+                    self?.hasUpdateAvailable = hasUpdate
+                    if hasUpdate {
+                        self?.showMenuBarState("⛏️ Update Available", color: .systemBlue)
+                        self?.popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .update, ip: self?.config.bitaxeIP, model: nil, frequency: nil, coreVoltage: nil)
+                    }
+                }
+            }
+        }
+    }
+    
     deinit {
-        // Clean up observers and timer
+        // Clean up observers and timers
         timer?.invalidate()
+        updateCheckTimer?.invalidate()
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -935,18 +991,118 @@ class BitaxeAppDelegate: NSObject, NSApplicationDelegate {
         if popover.isShown {
             popover.performClose(nil)
         } else {
-            // Ensure view is loaded for immediate display
-            if let popoverVC = popoverViewController {
-                _ = popoverVC.view
-                
-            }
-            if let button = statusItem.button {
-                popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            // Check for updates when popover opens (fresh check)
+            checkForHomebrewUpdates { [weak self] hasUpdate in
+                DispatchQueue.main.async {
+                    self?.hasUpdateAvailable = hasUpdate
+                    if hasUpdate {
+                        // Show update state immediately
+                        self?.showMenuBarState("⛏️ Update Available", color: .systemBlue)
+                        self?.popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .update, ip: self?.config.bitaxeIP, model: nil, frequency: nil, coreVoltage: nil)
+                    }
+                    // Always show popover, even if no update (might show connected state)
+                    self?.showPopover()
+                }
             }
         }
     }
     
+    private func showPopover() {
+        // Ensure view is loaded for immediate display
+        if let popoverVC = popoverViewController {
+            _ = popoverVC.view
+        }
+        if let button = statusItem.button {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+        }
+    }
+    
     func updateMinerData() {
+        // Check if update is available first - if so, don't fetch miner data
+        if hasUpdateAvailable {
+            showMenuBarState("⛏️ Update Available", color: .systemBlue)
+            popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .update, ip: config.bitaxeIP, model: nil, frequency: nil, coreVoltage: nil)
+            return
+        }
+        
+        // Check for Homebrew updates first (takes absolute priority)
+        checkForHomebrewUpdates { [weak self] hasUpdate in
+            DispatchQueue.main.async {
+                self?.hasUpdateAvailable = hasUpdate
+                if hasUpdate {
+                    // Update state takes absolute priority - block all other states
+                    self?.showMenuBarState("⛏️ Update Available", color: .systemBlue)
+                    self?.popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .update, ip: self?.config.bitaxeIP, model: nil, frequency: nil, coreVoltage: nil)
+                    return
+                }
+                // Only continue with normal data fetching if no update available
+                self?.fetchMinerData()
+            }
+        }
+    }
+    
+    private func checkForHomebrewUpdates(completion: @escaping (Bool) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/brew")
+            process.arguments = ["outdated", "--formula", "bitaxe-menubar"]
+            
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            process.standardError = pipe
+            
+            do {
+                try process.run()
+                process.waitUntilExit()
+                
+                let data = pipe.fileHandleForReading.readDataToEndOfFile()
+                let output = String(data: data, encoding: .utf8) ?? ""
+                
+                // If output contains "bitaxe-menubar", there's an update available
+                let hasUpdate = output.contains("bitaxe-menubar")
+                completion(hasUpdate)
+            } catch {
+                // If brew command fails, assume no update (fallback to normal operation)
+                completion(false)
+            }
+        }
+    }
+    
+    func checkForUpdatesAfterUpgrade() {
+        // Check if update is still available after running upgrade command
+        checkForHomebrewUpdates { [weak self] hasUpdate in
+            DispatchQueue.main.async {
+                self?.hasUpdateAvailable = hasUpdate
+                if !hasUpdate {
+                    // No more updates available, show success message and restart app
+                    self?.showMenuBarState("⛏️ Updated Successfully", color: .systemGreen)
+                    
+                    // After a few seconds, restart the app to start fresh
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        self?.restartApp()
+                    }
+                } else {
+                    // Update still available, keep showing update state
+                    self?.showMenuBarState("⛏️ Update Available", color: .systemBlue)
+                    self?.popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .update, ip: self?.config.bitaxeIP, model: nil, frequency: nil, coreVoltage: nil)
+                }
+            }
+        }
+    }
+    
+    func restartApp() {
+        // Restart the app by launching a new instance and terminating the current one
+        let task = Process()
+        task.launchPath = "/usr/bin/open"
+        task.arguments = ["-n", Bundle.main.bundlePath]
+        task.launch()
+        
+        // Terminate current instance
+        NSApplication.shared.terminate(nil)
+    }
+    
+    private func fetchMinerData() {
+        
         guard let apiURL = config.apiURL else {
             showMenuBarState("⛏️ Configure IP", color: .systemOrange)
             popoverViewController?.updateData(hashrate: nil, asicTemp: nil, vrTemp: nil, state: .notConfigured, ip: nil, model: nil, frequency: nil, coreVoltage: nil)

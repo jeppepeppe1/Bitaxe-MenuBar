@@ -75,6 +75,9 @@ pkill -f bitaxe-menubar && brew uninstall bitaxe-menubar && brew untap jeppepepp
 
 ## 📋 Changelog
 
+**v1.2.0**
+- **NEW**: Automatic update detection
+
 **v1.1.2**
 - API and caching optimizations for better performance
 - Smart background/foreground awareness
